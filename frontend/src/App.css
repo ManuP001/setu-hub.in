@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Work+Sans:wght@500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Work+Sans:wght@500;600;700;800;900&display=swap');
 
 * {
   margin: 0;
@@ -10,16 +10,31 @@ body {
   font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #f8fafc;
-  color: #1e293b;
+  background: #ffffff;
+  color: #1a1a1a;
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Work Sans', sans-serif;
+  font-weight: 700;
 }
 
 .App {
   min-height: 100vh;
+}
+
+/* Werale Brand Colors */
+:root {
+  --primary-yellow: #FFD60A;
+  --primary-dark: #1a1a1a;
+  --secondary-blue: #2563EB;
+  --secondary-orange: #F97316;
+  --success-green: #10B981;
+  --neutral-100: #F8FAFC;
+  --neutral-200: #E2E8F0;
+  --neutral-300: #CBD5E1;
+  --neutral-700: #334155;
+  --neutral-800: #1E293B;
 }
 
 /* Custom Scrollbar */
@@ -29,16 +44,16 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: var(--neutral-100);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: var(--neutral-300);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: var(--neutral-700);
 }
 
 /* Animations */
@@ -64,10 +79,161 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 .animate-fade-in {
-  animation: fadeIn 0.3s ease-out;
+  animation: fadeIn 0.4s ease-out;
 }
 
 .animate-slide-in {
-  animation: slideIn 0.4s ease-out;
+  animation: slideIn 0.5s ease-out;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.3s ease-out;
+}
+
+/* Utility Classes */
+.text-gradient {
+  background: linear-gradient(135deg, var(--primary-yellow) 0%, #FFB700 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.bg-yellow-gradient {
+  background: linear-gradient(135deg, var(--primary-yellow) 0%, #FFB700 100%);
+}
+
+.shadow-yellow {
+  box-shadow: 0 4px 20px rgba(255, 214, 10, 0.3);
+}
+
+.hover-lift {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+}
+
+/* Dashboard Stats Cards */
+.stat-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary-yellow), #FFB700);
+}
+
+/* Gamification Elements */
+.rank-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.rank-badge.gold {
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: #1a1a1a;
+}
+
+.rank-badge.silver {
+  background: linear-gradient(135deg, #C0C0C0, #808080);
+  color: #1a1a1a;
+}
+
+.rank-badge.bronze {
+  background: linear-gradient(135deg, #CD7F32, #8B4513);
+  color: #ffffff;
+}
+
+.rank-badge.default {
+  background: var(--neutral-200);
+  color: var(--neutral-700);
+}
+
+/* Progress Bars */
+.progress-bar {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--neutral-200);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-yellow), #FFB700);
+  transition: width 0.5s ease;
+}
+
+/* Charts & Data Visualization */
+.chart-container {
+  position: relative;
+  height: 300px;
+}
+
+/* Worker Profile Cards */
+.worker-card {
+  border: 2px solid var(--neutral-200);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.worker-card:hover {
+  border-color: var(--primary-yellow);
+  box-shadow: 0 8px 24px rgba(255, 214, 10, 0.2);
+}
+
+/* Loading States */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--neutral-200) 25%,
+    var(--neutral-100) 50%,
+    var(--neutral-200) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Responsive Typography */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2rem;
+  }
+  h2 {
+    font-size: 1.5rem;
+  }
 }
