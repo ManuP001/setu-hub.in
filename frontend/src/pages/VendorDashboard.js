@@ -139,7 +139,4 @@ const VendorDashboard = () => {
   );
 };
 
-// Import missing icon
-import { CheckCircle } from 'lucide-react';
-
 export default VendorDashboard;
