@@ -82,7 +82,7 @@ const LandingPage = () => {
               <span className="text-2xl font-black text-gray-900">W</span>
             </div>
             <div>
-              <h1 className="text-2xl font-black text-gray-900" data-testid="landing-logo">Werale</h1>
+              <h1 className="text-2xl font-black text-gray-900" data-testid="landing-logo">SetuHub</h1>
               <p className="text-xs text-gray-600">Staffing Reinvented</p>
             </div>
           </div>
