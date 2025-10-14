@@ -25,6 +25,18 @@ const JobSeekerDashboard = () => {
   const [applications, setApplications] = useState([]);
   const [selectedJob, setSelectedJob] = useState(null);
   const [applyDialog, setApplyDialog] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [applicationForm, setApplicationForm] = useState({
+    applicant_name: '',
+    applicant_email: '',
+    applicant_phone: '',
+    experience: '',
+    cover_note: ''
+  });
+  const [activeTab, setActiveTab] = useState('browse');
+  const [applications, setApplications] = useState([]);
+  const [selectedJob, setSelectedJob] = useState(null);
+  const [applyDialog, setApplyDialog] = useState(false);
   const [applicationForm, setApplicationForm] = useState({
     applicant_name: '',
     applicant_email: '',
