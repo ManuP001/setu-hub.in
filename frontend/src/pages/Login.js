@@ -61,7 +61,7 @@ const Login = () => {
             </div>
           </div>
           <CardTitle className="text-3xl font-black" data-testid="login-title">Welcome Back</CardTitle>
-          <CardDescription className="text-base" data-testid="login-description">Log in to your Werale account</CardDescription>
+          <CardDescription className="text-base" data-testid="login-description">Log in to your SetuHub account</CardDescription>
         </CardHeader>
         <CardContent className="px-8 pb-8">
           <Tabs value={userType} onValueChange={setUserType} className="mb-6">
