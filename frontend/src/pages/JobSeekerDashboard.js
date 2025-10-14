@@ -103,6 +103,59 @@ const JobSeekerDashboard = () => {
     setFilteredJobs(filtered);
   };
 
+  const fetchApplications = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${API}/applications`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setApplications(response.data);
+    } catch (error) {
+      console.error('Failed to fetch applications:', error);
+      toast.error('Failed to load applications');
+    }
+  };
+
+  const handleApply = (job) => {
+    setSelectedJob(job);
+    setApplyDialog(true);
+  };
+
+  const submitApplication = async () => {
+    if (!selectedJob) return;
+    
+    setLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      const applicationData = {
+        ...applicationForm,
+        job_id: selectedJob.id
+      };
+      
+      await axios.post(`${API}/applications`, applicationData, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      toast.success('Application submitted successfully!');
+      setApplyDialog(false);
+      fetchApplications(); // Refresh applications
+      
+      // Reset form
+      setApplicationForm({
+        applicant_name: user?.full_name || '',
+        applicant_email: user?.email || '',
+        applicant_phone: user?.phone || '',
+        experience: '',
+        cover_note: ''
+      });
+    } catch (error) {
+      console.error('Failed to submit application:', error);
+      toast.error('Failed to submit application');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
