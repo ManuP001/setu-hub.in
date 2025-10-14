@@ -411,7 +411,7 @@ class SetuHubAPITester:
             # Test duplicate application (should fail)
             success3, response3, status3 = self.make_request('POST', 'applications', application_data, 
                                                            token=self.tokens['job_seeker'], expected_status=400)
-            if not success3 and status3 == 400:
+            if status3 == 400:
                 self.log_test("Duplicate Application Prevention", True, "Correctly prevented duplicate application")
             else:
                 self.log_test("Duplicate Application Prevention", False, error=f"Should have failed with 400, got {status3}")
