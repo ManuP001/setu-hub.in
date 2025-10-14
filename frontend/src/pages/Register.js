@@ -67,7 +67,7 @@ const Register = () => {
             </div>
           </div>
           <CardTitle className="text-3xl font-black" data-testid="register-title">Create Account</CardTitle>
-          <CardDescription className="text-base" data-testid="register-description">Join Werale marketplace today</CardDescription>
+          <CardDescription className="text-base" data-testid="register-description">Join SetuHub marketplace today</CardDescription>
         </CardHeader>
         <CardContent className="px-8 pb-8">
           <Tabs value={userType} onValueChange={setUserType} className="mb-6">
