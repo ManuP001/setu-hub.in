@@ -139,6 +139,7 @@ const EnterpriseDashboard = () => {
           <Route path="gus" element={<ManageGUs enterprise={enterprise} />} />
           <Route path="jobs" element={<ManageJobs enterprise={enterprise} />} />
           <Route path="jobs/create" element={<CreateJob enterprise={enterprise} />} />
+          <Route path="bulk-upload" element={<BulkUpload enterprise={enterprise} />} />
         </Routes>
       </main>
     </div>
