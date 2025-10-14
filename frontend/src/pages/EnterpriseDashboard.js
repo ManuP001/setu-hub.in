@@ -99,7 +99,11 @@ const EnterpriseDashboard = () => {
               <button
                 key={item.path}
                 onClick={() => {
-                  navigate(item.path);
+                  if (item.external) {
+                    window.location.href = item.path;
+                  } else {
+                    navigate(item.path);
+                  }
                   setSidebarOpen(false);
                 }}
                 className={`
