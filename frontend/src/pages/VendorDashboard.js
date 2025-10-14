@@ -45,6 +45,7 @@ const VendorDashboard = () => {
   };
 
   const menuItems = [
+    { path: '/', icon: <Users className="w-5 h-5" />, label: 'Home', external: true },
     { path: '/vendor', icon: <LayoutDashboard className="w-5 h-5" />, label: 'Dashboard' },
     { path: '/vendor/jobs', icon: <Briefcase className="w-5 h-5" />, label: 'Available Jobs' },
     { path: '/vendor/commitments', icon: <CheckCircle className="w-5 h-5" />, label: 'My Commitments' },
