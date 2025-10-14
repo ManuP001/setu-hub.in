@@ -306,6 +306,111 @@ const JobSeekerDashboard = () => {
         )}
       </main>
 
+      {/* Application Dialog */}
+      <Dialog open={applyDialog} onOpenChange={setApplyDialog}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <FileText className="w-5 h-5" />
+              Apply for {selectedJob?.role}
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            {selectedJob && (
+              <div className="bg-slate-50 p-4 rounded-lg">
+                <h4 className="font-semibold capitalize">{selectedJob.role}</h4>
+                <p className="text-sm text-slate-600">{selectedJob.enterprise_details?.name}</p>
+                <p className="text-sm text-slate-600">{selectedJob.gu_details?.city}, {selectedJob.gu_details?.state}</p>
+              </div>
+            )}
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="applicant_name">Full Name</Label>
+                <Input
+                  id="applicant_name"
+                  value={applicationForm.applicant_name}
+                  onChange={(e) => setApplicationForm(prev => ({...prev, applicant_name: e.target.value}))}
+                  data-testid="applicant-name-input"
+                />
+              </div>
+              <div>
+                <Label htmlFor="applicant_email">Email</Label>
+                <Input
+                  id="applicant_email"
+                  type="email"
+                  value={applicationForm.applicant_email}
+                  onChange={(e) => setApplicationForm(prev => ({...prev, applicant_email: e.target.value}))}
+                  data-testid="applicant-email-input"
+                />
+              </div>
+            </div>
+            
+            <div>
+              <Label htmlFor="applicant_phone">Phone Number</Label>
+              <Input
+                id="applicant_phone"
+                value={applicationForm.applicant_phone}
+                onChange={(e) => setApplicationForm(prev => ({...prev, applicant_phone: e.target.value}))}
+                data-testid="applicant-phone-input"
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="experience">Years of Experience</Label>
+              <Input
+                id="experience"
+                value={applicationForm.experience}
+                onChange={(e) => setApplicationForm(prev => ({...prev, experience: e.target.value}))}
+                placeholder="e.g., 2 years"
+                data-testid="experience-input"
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="cover_note">Cover Note</Label>
+              <Textarea
+                id="cover_note"
+                value={applicationForm.cover_note}
+                onChange={(e) => setApplicationForm(prev => ({...prev, cover_note: e.target.value}))}
+                placeholder="Tell us why you're interested in this position..."
+                rows={4}
+                data-testid="cover-note-input"
+              />
+            </div>
+            
+            <div className="flex gap-3 pt-4">
+              <Button 
+                variant="outline" 
+                onClick={() => setApplyDialog(false)}
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+              <Button 
+                onClick={submitApplication}
+                disabled={loading || !applicationForm.applicant_name || !applicationForm.applicant_email}
+                className="flex-1 bg-purple-600 hover:bg-purple-700"
+                data-testid="submit-application-btn"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Submitting...
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-4 h-4 mr-2" />
+                    Submit Application
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Footer */}
       <footer className="bg-white border-t mt-12 py-6">
         <div className="max-w-7xl mx-auto px-6 text-center text-sm text-slate-600">
