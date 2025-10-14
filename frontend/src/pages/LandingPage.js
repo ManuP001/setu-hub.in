@@ -99,10 +99,6 @@ const LandingPage = () => {
         <div className="max-w-7xl mx-auto px-6 py-24 relative">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8 animate-fade-in">
-              <Badge className="bg-yellow-100 text-yellow-900 border-yellow-300 text-sm font-semibold px-4 py-1">
-                <Zap className="w-3 h-3 mr-1 inline" />
-                Trusted by 500+ Enterprises
-              </Badge>
               <h2 className="text-6xl lg:text-7xl font-black leading-tight" data-testid="hero-title">
                 Connecting businesses with
                 <span className="text-gradient block mt-2">get-the-job-done workers</span>
