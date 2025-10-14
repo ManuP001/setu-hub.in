@@ -490,10 +490,14 @@ class SetuHubAPITester:
         self.test_enterprise_profile_creation()
         self.test_gu_creation()
         self.test_job_creation()
+        self.test_bulk_job_upload()  # NEW: Test bulk upload
         self.test_vendor_profile_creation()
         self.test_vendor_job_view()
         self.test_job_commitment()
-        self.test_dashboard_stats()
+        self.test_job_applications()  # NEW: Test job applications
+        self.test_enhanced_filtering()  # NEW: Test enhanced filtering
+        self.test_application_management()  # NEW: Test application management
+        self.test_dashboard_with_applications()  # NEW: Test dashboard with applications
         self.test_job_seeker_view()
         self.test_data_persistence()
         
