@@ -369,6 +369,13 @@ async def create_vendor(vendor: VendorCreate, current_user: dict = Depends(get_c
         "created_at": datetime.now(timezone.utc).isoformat()
     }
     await db.vendors.insert_one(vendor_doc)
+    
+    # Update user record with vendor_id
+    await db.users.update_one(
+        {"id": current_user["id"]},
+        {"$set": {"vendor_id": vendor_id}}
+    )
+    
     return Vendor(**vendor_doc)
 
 @api_router.get("/vendors", response_model=List[Vendor])
