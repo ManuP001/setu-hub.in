@@ -196,114 +196,173 @@ const JobSeekerDashboard = () => {
       <main className="max-w-7xl mx-auto px-6 py-8">
         <div className="mb-8">
           <h2 className="text-3xl font-bold mb-2" data-testid="page-title">Find Your Next Opportunity</h2>
-          <p className="text-slate-600">Browse available job positions across logistics and quick commerce sectors</p>
+          <p className="text-slate-600">Browse available job positions and manage your applications</p>
         </div>
 
-        {/* Filters */}
-        <Card className="mb-6">
-          <CardContent className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="md:col-span-2 relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <Input
-                  placeholder="Search by role, company, or location..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                  data-testid="search-input"
-                />
-              </div>
-              <Select value={roleFilter} onValueChange={setRoleFilter}>
-                <SelectTrigger data-testid="role-filter-select">
-                  <div className="flex items-center gap-2">
-                    <Filter className="w-4 h-4" />
-                    <SelectValue />
-                  </div>
-                </SelectTrigger>
-                <SelectContent>
-                  {uniqueRoles.map(role => (
-                    <SelectItem key={role} value={role} className="capitalize">
-                      {role === 'all' ? 'All Roles' : role.replace('_', ' ')}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="mt-4 text-sm text-slate-600">
-              Showing <span className="font-bold">{filteredJobs.length}</span> available positions
-            </div>
-          </CardContent>
-        </Card>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="browse" data-testid="browse-tab">
+              <Briefcase className="w-4 h-4 mr-2" />
+              Browse Jobs
+            </TabsTrigger>
+            <TabsTrigger value="applications" data-testid="applications-tab">
+              <FileText className="w-4 h-4 mr-2" />
+              My Applications ({applications.length})
+            </TabsTrigger>
+          </TabsList>
 
-        {/* Jobs Grid */}
-        {filteredJobs.length === 0 ? (
-          <Card data-testid="no-jobs-message">
-            <CardContent className="p-12 text-center">
-              <Briefcase className="w-16 h-16 mx-auto mb-4 text-slate-300" />
-              <p className="text-slate-600">No jobs found matching your criteria</p>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {filteredJobs.map((job, idx) => (
-              <Card key={job.id} className="hover:shadow-lg transition-all" data-testid={`job-card-${idx}`}>
-                <CardHeader>
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <CardTitle className="capitalize text-xl mb-2">{job.role}</CardTitle>
-                      <div className="flex items-center gap-2 text-sm text-slate-600">
-                        <Building2 className="w-4 h-4" />
-                        <span>{job.enterprise_details?.name || 'Company'}</span>
+          <TabsContent value="browse" className="mt-6">
+            {/* Filters */}
+            <Card className="mb-6">
+              <CardContent className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="md:col-span-2 relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+                    <Input
+                      placeholder="Search by role, company, or location..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10"
+                      data-testid="search-input"
+                    />
+                  </div>
+                  <Select value={roleFilter} onValueChange={setRoleFilter}>
+                    <SelectTrigger data-testid="role-filter-select">
+                      <div className="flex items-center gap-2">
+                        <Filter className="w-4 h-4" />
+                        <SelectValue />
                       </div>
-                    </div>
-                    <Badge className="bg-purple-100 text-purple-700 border-purple-200">
-                      {job.quantity_required} openings
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    {job.gu_details && (
-                      <>
-                        <div className="flex items-start gap-2 text-sm">
-                          <MapPin className="w-4 h-4 text-slate-500 mt-0.5" />
-                          <div>
-                            <p className="font-medium">{job.gu_details.facility_name}</p>
-                            <p className="text-slate-600">
-                              {job.gu_details.city}, {job.gu_details.state} - {job.gu_details.pin_code}
-                            </p>
-                          </div>
-                        </div>
-                      </>
-                    )}
-                    {job.shift_time && (
-                      <div className="flex items-center gap-2 text-sm">
-                        <Clock className="w-4 h-4 text-slate-500" />
-                        <span className="capitalize">{job.shift_time}</span>
-                      </div>
-                    )}
-                    {job.description && (
-                      <p className="text-sm text-slate-600 pt-2 border-t">{job.description}</p>
-                    )}
-                  </div>
-                  <div className="mt-4 pt-4 border-t flex justify-between items-center">
-                    <div className="text-xs text-slate-500">
-                      Posted on: {new Date(job.created_at).toLocaleDateString()}
-                    </div>
-                    <Button 
-                      onClick={() => handleApply(job)}
-                      className="bg-purple-600 hover:bg-purple-700"
-                      data-testid={`apply-btn-${idx}`}
-                    >
-                      <Send className="w-4 h-4 mr-2" />
-                      Apply Now
-                    </Button>
-                  </div>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {uniqueRoles.map(role => (
+                        <SelectItem key={role} value={role} className="capitalize">
+                          {role === 'all' ? 'All Roles' : role.replace('_', ' ')}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="mt-4 text-sm text-slate-600">
+                  Showing <span className="font-bold">{filteredJobs.length}</span> available positions
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Jobs Grid */}
+            {filteredJobs.length === 0 ? (
+              <Card data-testid="no-jobs-message">
+                <CardContent className="p-12 text-center">
+                  <Briefcase className="w-16 h-16 mx-auto mb-4 text-slate-300" />
+                  <p className="text-slate-600">No jobs found matching your criteria</p>
                 </CardContent>
               </Card>
-            ))}
-          </div>
-        )}
+            ) : (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {filteredJobs.map((job, idx) => (
+                  <Card key={job.id} className="hover:shadow-lg transition-all" data-testid={`job-card-${idx}`}>
+                    <CardHeader>
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <CardTitle className="capitalize text-xl mb-2">{job.role}</CardTitle>
+                          <div className="flex items-center gap-2 text-sm text-slate-600">
+                            <Building2 className="w-4 h-4" />
+                            <span>{job.enterprise_details?.name || 'Company'}</span>
+                          </div>
+                        </div>
+                        <Badge className="bg-purple-100 text-purple-700 border-purple-200">
+                          {job.quantity_required} openings
+                        </Badge>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        {job.gu_details && (
+                          <>
+                            <div className="flex items-start gap-2 text-sm">
+                              <MapPin className="w-4 h-4 text-slate-500 mt-0.5" />
+                              <div>
+                                <p className="font-medium">{job.gu_details.facility_name}</p>
+                                <p className="text-slate-600">
+                                  {job.gu_details.city}, {job.gu_details.state} - {job.gu_details.pin_code}
+                                </p>
+                              </div>
+                            </div>
+                          </>
+                        )}
+                        {job.shift_time && (
+                          <div className="flex items-center gap-2 text-sm">
+                            <Clock className="w-4 h-4 text-slate-500" />
+                            <span className="capitalize">{job.shift_time}</span>
+                          </div>
+                        )}
+                        {job.description && (
+                          <p className="text-sm text-slate-600 pt-2 border-t">{job.description}</p>
+                        )}
+                      </div>
+                      <div className="mt-4 pt-4 border-t flex justify-between items-center">
+                        <div className="text-xs text-slate-500">
+                          Posted on: {new Date(job.created_at).toLocaleDateString()}
+                        </div>
+                        <Button 
+                          onClick={() => handleApply(job)}
+                          className="bg-purple-600 hover:bg-purple-700"
+                          data-testid={`apply-btn-${idx}`}
+                        >
+                          <Send className="w-4 h-4 mr-2" />
+                          Apply Now
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="applications" className="mt-6">
+            {applications.length === 0 ? (
+              <Card data-testid="no-applications-message">
+                <CardContent className="p-12 text-center">
+                  <FileText className="w-16 h-16 mx-auto mb-4 text-slate-300" />
+                  <p className="text-slate-600">No applications submitted yet</p>
+                  <p className="text-sm text-slate-500 mt-2">Browse jobs and apply to get started</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-4">
+                {applications.map((application, idx) => (
+                  <Card key={application.id} data-testid={`application-card-${idx}`}>
+                    <CardContent className="p-6">
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-lg capitalize">{application.job?.role || 'Job Role'}</h3>
+                          <p className="text-slate-600">{application.job?.enterprise_details?.name || 'Company'}</p>
+                          <p className="text-sm text-slate-500 mt-1">
+                            Applied on: {new Date(application.created_at).toLocaleDateString()}
+                          </p>
+                        </div>
+                        <Badge 
+                          className={
+                            application.status === 'pending' ? 'bg-yellow-100 text-yellow-700 border-yellow-200' :
+                            application.status === 'accepted' ? 'bg-green-100 text-green-700 border-green-200' :
+                            'bg-red-100 text-red-700 border-red-200'
+                          }
+                        >
+                          {application.status}
+                        </Badge>
+                      </div>
+                      {application.cover_note && (
+                        <div className="mt-4 pt-4 border-t">
+                          <p className="text-sm text-slate-600">{application.cover_note}</p>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+        </Tabs>
       </main>
 
       {/* Application Dialog */}
