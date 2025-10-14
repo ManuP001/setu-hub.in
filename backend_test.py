@@ -359,18 +359,40 @@ class SetuHubAPITester:
         """Test job seeker application functionality"""
         print("\n🔍 Testing Job Applications...")
         
-        if 'job_seeker' not in self.tokens or 'test_job' not in self.jobs:
-            self.log_test("Job Applications", False, error="No job seeker token or test job available")
+        if 'job_seeker' not in self.tokens:
+            self.log_test("Job Applications", False, error="No job seeker token available")
             return
+        
+        # Create a separate job for application testing (since the first job might be committed)
+        if 'test_gu' not in self.gus or 'test_enterprise' not in self.enterprises:
+            self.log_test("Job Applications", False, error="No GU or enterprise available for creating application job")
+            return
+        
+        application_job_data = {
+            "enterprise_id": self.enterprises['test_enterprise']['id'],
+            "gu_id": self.gus['test_gu']['id'],
+            "role": "biller",
+            "quantity_required": 2,
+            "shift_time": "evening",
+            "description": "Billing and invoice processing"
+        }
+        
+        success_job, response_job, status_job = self.make_request('POST', 'jobs', application_job_data, 
+                                                                token=self.tokens['enterprise'], expected_status=200)
+        if not success_job:
+            self.log_test("Job Applications", False, error=f"Failed to create application test job: {status_job}")
+            return
+        
+        application_test_job = response_job
         
         # Test creating an application
         application_data = {
-            "job_id": self.jobs['test_job']['id'],
+            "job_id": application_test_job['id'],
             "applicant_name": self.users['job_seeker']['full_name'],
             "applicant_email": self.users['job_seeker']['email'],
             "applicant_phone": self.users['job_seeker']['phone'],
             "experience": "2 years",
-            "cover_note": "I am very interested in this picker position and have relevant experience."
+            "cover_note": "I am very interested in this biller position and have relevant experience."
         }
         
         success, response, status = self.make_request('POST', 'applications', application_data, 
