@@ -224,7 +224,7 @@ const LandingPage = () => {
       <section className="py-24 bg-gray-900">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h3 className="text-4xl font-black text-white mb-4" data-testid="cta-title">Ready to Transform Your Staffing?</h3>
-          <p className="text-xl text-gray-300 mb-8">Join hundreds of enterprises already using Werale</p>
+          <p className="text-xl text-gray-300 mb-8">Join hundreds of enterprises already using SetuHub</p>
           <Button size="lg" onClick={() => navigate('/register')} className="bg-yellow-gradient hover:opacity-90 text-gray-900 font-bold text-lg px-12 h-14 shadow-yellow" data-testid="cta-register-btn">
             Get Started Free <ArrowRight className="ml-2 w-5 h-5" />
           </Button>
