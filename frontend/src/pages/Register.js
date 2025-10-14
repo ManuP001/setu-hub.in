@@ -59,6 +59,14 @@ const Register = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-white to-orange-50 flex items-center justify-center p-6">
+      <Button 
+        variant="ghost" 
+        onClick={() => navigate('/')} 
+        className="absolute top-6 left-6 font-semibold"
+        data-testid="back-to-home-btn"
+      >
+        ← Back to Home
+      </Button>
       <Card className="w-full max-w-2xl shadow-2xl border-2" data-testid="register-card">
         <CardHeader className="text-center pb-8 pt-8">
           <div className="flex justify-center mb-6">
