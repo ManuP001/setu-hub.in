@@ -137,7 +137,7 @@ const LandingPage = () => {
                       <Clock className="w-6 h-6 text-white" />
                     </div>
                     <div>
-                      <p className="font-bold text-gray-900">< 6 Hours</p>
+                      <p className="font-bold text-gray-900">&lt; 6 Hours</p>
                       <p className="text-sm text-gray-600">Average response time</p>
                     </div>
                   </div>
