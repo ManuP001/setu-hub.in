@@ -239,9 +239,9 @@ const LandingPage = () => {
               <div className="w-10 h-10 bg-yellow-gradient rounded-lg flex items-center justify-center">
                 <span className="text-xl font-black text-gray-900">W</span>
               </div>
-              <span className="text-xl font-black text-white">Werale</span>
+              <span className="text-xl font-black text-white">SetuHub</span>
             </div>
-            <p className="text-gray-400">&copy; 2025 Werale. Staffing reinvented.</p>
+            <p className="text-gray-400">&copy; 2025 SetuHub. Staffing reinvented.</p>
           </div>
         </div>
       </footer>
