@@ -322,6 +322,141 @@ class SetuHubAPITester:
         else:
             self.log_test("Job Seeker View", False, error=f"Status: {status}, Response: {response}")
 
+    def test_bulk_job_upload(self):
+        """Test bulk job upload via CSV"""
+        print("\n🔍 Testing Bulk Job Upload...")
+        
+        if 'enterprise' not in self.tokens or 'test_enterprise' not in self.enterprises or 'test_gu' not in self.gus:
+            self.log_test("Bulk Job Upload", False, error="Missing enterprise, token, or GU")
+            return
+        
+        # Create CSV content
+        csv_content = f"""enterprise_id,gu_id,role,quantity_required,shift_time,description,salary,experience_required
+{self.enterprises['test_enterprise']['id']},{self.gus['test_gu']['id']},loader,3,morning,Loading trucks,28000,1-2 years
+{self.enterprises['test_enterprise']['id']},{self.gus['test_gu']['id']},rider,2,full_day,Delivery operations,32000,2+ years"""
+        
+        # Make multipart request
+        import io
+        files = {'file': ('test_jobs.csv', io.StringIO(csv_content), 'text/csv')}
+        
+        try:
+            url = f"{self.base_url}/jobs/bulk-upload"
+            headers = {'Authorization': f'Bearer {self.tokens["enterprise"]}'}
+            response = requests.post(url, files=files, headers=headers)
+            
+            if response.status_code == 200:
+                result = response.json()
+                if result.get('jobs_created', 0) > 0:
+                    self.log_test("Bulk Job Upload", True, f"Created {result['jobs_created']} jobs, {len(result.get('errors', []))} errors")
+                else:
+                    self.log_test("Bulk Job Upload", False, error=f"No jobs created: {result}")
+            else:
+                self.log_test("Bulk Job Upload", False, error=f"Status: {response.status_code}, Response: {response.text}")
+        except Exception as e:
+            self.log_test("Bulk Job Upload", False, error=f"Exception: {str(e)}")
+
+    def test_job_applications(self):
+        """Test job seeker application functionality"""
+        print("\n🔍 Testing Job Applications...")
+        
+        if 'job_seeker' not in self.tokens or 'test_job' not in self.jobs:
+            self.log_test("Job Applications", False, error="No job seeker token or test job available")
+            return
+        
+        # Test creating an application
+        application_data = {
+            "job_id": self.jobs['test_job']['id'],
+            "applicant_name": self.users['job_seeker']['full_name'],
+            "applicant_email": self.users['job_seeker']['email'],
+            "applicant_phone": self.users['job_seeker']['phone'],
+            "experience": "2 years",
+            "cover_note": "I am very interested in this picker position and have relevant experience."
+        }
+        
+        success, response, status = self.make_request('POST', 'applications', application_data, 
+                                                    token=self.tokens['job_seeker'], expected_status=200)
+        if success and 'id' in response:
+            self.log_test("Job Application Creation", True, f"Application ID: {response['id']}")
+            
+            # Test fetching applications for job seeker
+            success2, response2, status2 = self.make_request('GET', 'applications', 
+                                                           token=self.tokens['job_seeker'], expected_status=200)
+            if success2 and isinstance(response2, list) and len(response2) > 0:
+                self.log_test("Job Seeker Applications View", True, f"Found {len(response2)} applications")
+            else:
+                self.log_test("Job Seeker Applications View", False, error=f"Status: {status2}")
+                
+            # Test duplicate application (should fail)
+            success3, response3, status3 = self.make_request('POST', 'applications', application_data, 
+                                                           token=self.tokens['job_seeker'], expected_status=400)
+            if not success3 and status3 == 400:
+                self.log_test("Duplicate Application Prevention", True, "Correctly prevented duplicate application")
+            else:
+                self.log_test("Duplicate Application Prevention", False, error=f"Should have failed with 400, got {status3}")
+        else:
+            self.log_test("Job Application Creation", False, error=f"Status: {status}, Response: {response}")
+
+    def test_enhanced_filtering(self):
+        """Test enhanced job filtering with city filter"""
+        print("\n🔍 Testing Enhanced Job Filtering...")
+        
+        if 'job_seeker' not in self.tokens:
+            self.log_test("Enhanced Job Filtering", False, error="No job seeker token available")
+            return
+        
+        # Test city filter
+        success, response, status = self.make_request('GET', 'jobs?city=Bangalore', 
+                                                    token=self.tokens['job_seeker'], expected_status=200)
+        if success and isinstance(response, list):
+            self.log_test("City Filter", True, f"Found {len(response)} jobs in Bangalore")
+        else:
+            self.log_test("City Filter", False, error=f"Status: {status}")
+        
+        # Test role filter
+        success2, response2, status2 = self.make_request('GET', 'jobs?role=picker', 
+                                                       token=self.tokens['job_seeker'], expected_status=200)
+        if success2 and isinstance(response2, list):
+            self.log_test("Role Filter", True, f"Found {len(response2)} picker jobs")
+        else:
+            self.log_test("Role Filter", False, error=f"Status: {status2}")
+
+    def test_application_management(self):
+        """Test application management for enterprises"""
+        print("\n🔍 Testing Application Management...")
+        
+        if 'enterprise' not in self.tokens or 'test_job' not in self.jobs:
+            self.log_test("Application Management", False, error="No enterprise token or test job")
+            return
+        
+        # Test fetching applications for a specific job
+        success, response, status = self.make_request('GET', f'applications/job/{self.jobs["test_job"]["id"]}', 
+                                                    token=self.tokens['enterprise'], expected_status=200)
+        if success and isinstance(response, list):
+            self.log_test("Enterprise Job Applications View", True, f"Found {len(response)} applications for job")
+        else:
+            self.log_test("Enterprise Job Applications View", False, error=f"Status: {status}")
+
+    def test_dashboard_with_applications(self):
+        """Test dashboard stats including application counts"""
+        print("\n🔍 Testing Dashboard with Application Stats...")
+        
+        if 'test_enterprise' in self.enterprises:
+            success, response, status = self.make_request('GET', f"dashboard/enterprise/{self.enterprises['test_enterprise']['id']}", 
+                                                        token=self.tokens['enterprise'], expected_status=200)
+            if success and 'total_applications' in response:
+                self.log_test("Enterprise Dashboard with Applications", True, f"Total applications: {response['total_applications']}")
+            else:
+                self.log_test("Enterprise Dashboard with Applications", False, error=f"Status: {status}, missing total_applications")
+        
+        # Test job seeker dashboard
+        if 'job_seeker' in self.users:
+            success2, response2, status2 = self.make_request('GET', f"dashboard/job-seeker/{self.users['job_seeker']['id']}", 
+                                                           token=self.tokens['job_seeker'], expected_status=200)
+            if success2 and 'total_applications' in response2:
+                self.log_test("Job Seeker Dashboard", True, f"Stats: {response2}")
+            else:
+                self.log_test("Job Seeker Dashboard", False, error=f"Status: {status2}")
+
     def test_data_persistence(self):
         """Test data persistence by fetching created entities"""
         print("\n🔍 Testing Data Persistence...")
