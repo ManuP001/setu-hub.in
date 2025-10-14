@@ -104,7 +104,7 @@ const LandingPage = () => {
                 <span className="text-gradient block mt-2">get-the-job-done workers</span>
               </h2>
               <p className="text-xl text-gray-600 leading-relaxed max-w-xl" data-testid="hero-subtitle">
-                AI-powered, human-vetted workforce marketplace for quick commerce, e-commerce, and logistics enterprises
+                Human-vetted workforce marketplace for quick commerce, e-commerce, and logistics enterprises
               </p>
               <div className="flex gap-4">
                 <Button size="lg" onClick={handleGetStarted} className="bg-yellow-gradient hover:opacity-90 text-gray-900 font-bold text-lg px-8 h-14 shadow-yellow" data-testid="hero-cta-btn">
