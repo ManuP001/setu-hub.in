@@ -248,6 +248,13 @@ async def create_enterprise(enterprise: EnterpriseCreate, current_user: dict = D
         "created_at": datetime.now(timezone.utc).isoformat()
     }
     await db.enterprises.insert_one(enterprise_doc)
+    
+    # Update user record with enterprise_id
+    await db.users.update_one(
+        {"id": current_user["id"]},
+        {"$set": {"enterprise_id": enterprise_id}}
+    )
+    
     return Enterprise(**enterprise_doc)
 
 @api_router.get("/enterprises", response_model=List[Enterprise])
