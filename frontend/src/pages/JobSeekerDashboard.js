@@ -170,13 +170,23 @@ const JobSeekerDashboard = () => {
       {/* Header */}
       <header className="bg-white border-b sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
-              <Briefcase className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold">SetuHub</h1>
-              <p className="text-xs text-slate-500">Job Seeker Portal</p>
+          <div className="flex items-center gap-4">
+            <Button 
+              variant="ghost" 
+              onClick={() => window.location.href = '/'} 
+              className="font-semibold"
+              data-testid="home-btn"
+            >
+              ← Home
+            </Button>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
+                <Briefcase className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold">SetuHub</h1>
+                <p className="text-xs text-slate-500">Job Seeker Portal</p>
+              </div>
             </div>
           </div>
           <div className="flex items-center gap-4">
