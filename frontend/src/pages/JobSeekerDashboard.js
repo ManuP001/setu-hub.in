@@ -21,6 +21,17 @@ const JobSeekerDashboard = () => {
   const [filteredJobs, setFilteredJobs] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
+  const [activeTab, setActiveTab] = useState('browse');
+  const [applications, setApplications] = useState([]);
+  const [selectedJob, setSelectedJob] = useState(null);
+  const [applyDialog, setApplyDialog] = useState(false);
+  const [applicationForm, setApplicationForm] = useState({
+    applicant_name: '',
+    applicant_email: '',
+    applicant_phone: '',
+    experience: '',
+    cover_note: ''
+  });
 
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem('user'));
