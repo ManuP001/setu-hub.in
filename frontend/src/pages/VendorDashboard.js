@@ -3,7 +3,7 @@ import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { API } from '@/App';
 import { Button } from '@/components/ui/button';
-import { Users, LayoutDashboard, Briefcase, User, LogOut, Menu, X } from 'lucide-react';
+import { Users, LayoutDashboard, Briefcase, User, LogOut, Menu, X, CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
 // Sub-pages
