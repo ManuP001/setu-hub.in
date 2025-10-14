@@ -286,10 +286,18 @@ const JobSeekerDashboard = () => {
                       <p className="text-sm text-slate-600 pt-2 border-t">{job.description}</p>
                     )}
                   </div>
-                  <div className="mt-4 pt-4 border-t">
+                  <div className="mt-4 pt-4 border-t flex justify-between items-center">
                     <div className="text-xs text-slate-500">
                       Posted on: {new Date(job.created_at).toLocaleDateString()}
                     </div>
+                    <Button 
+                      onClick={() => handleApply(job)}
+                      className="bg-purple-600 hover:bg-purple-700"
+                      data-testid={`apply-btn-${idx}`}
+                    >
+                      <Send className="w-4 h-4 mr-2" />
+                      Apply Now
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
