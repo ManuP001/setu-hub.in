@@ -157,7 +157,7 @@ const LandingPage = () => {
       <section className="py-24 bg-gray-50">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
-            <h3 className="text-4xl font-black mb-4">Why Choose Werale?</h3>
+            <h3 className="text-4xl font-black mb-4">Why Choose SetuHub?</h3>
             <p className="text-xl text-gray-600">Fast, reliable, and powered by technology</p>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
