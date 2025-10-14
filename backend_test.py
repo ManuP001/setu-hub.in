@@ -232,9 +232,13 @@ class SetuHubAPITester:
                                                     token=self.tokens['vendor'], expected_status=200)
         if success and 'id' in response:
             self.vendors['test_vendor'] = response
-            # Update user with vendor_id
+            # Update user with vendor_id - this needs to be done in the backend
             self.users['vendor']['vendor_id'] = response['id']
             self.log_test("Vendor Profile Creation", True, f"Vendor ID: {response['id']}")
+            
+            # Wait a moment for the database to update
+            import time
+            time.sleep(1)
         else:
             self.log_test("Vendor Profile Creation", False, error=f"Status: {status}, Response: {response}")
 
