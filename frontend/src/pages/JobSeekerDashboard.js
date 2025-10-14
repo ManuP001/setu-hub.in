@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Briefcase, MapPin, Building2, Clock, Search, Filter, LogOut, User, Send, FileText } from 'lucide-react';
+import { Briefcase, MapPin, Building2, Clock, Search, Filter, LogOut, User, Send, FileText, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 const JobSeekerDashboard = () => {
