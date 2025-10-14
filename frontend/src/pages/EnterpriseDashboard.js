@@ -12,6 +12,7 @@ import EnterpriseProfile from '@/pages/enterprise/EnterpriseProfile';
 import ManageGUs from '@/pages/enterprise/ManageGUs';
 import ManageJobs from '@/pages/enterprise/ManageJobs';
 import CreateJob from '@/pages/enterprise/CreateJob';
+import BulkUpload from '@/pages/enterprise/BulkUpload';
 
 const EnterpriseDashboard = () => {
   const navigate = useNavigate();
