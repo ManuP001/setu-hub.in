@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Depends, status
+from fastapi import FastAPI, APIRouter, HTTPException, Depends, status, UploadFile, File
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -12,7 +12,8 @@ from datetime import datetime, timezone
 from passlib.context import CryptContext
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 import jwt
-import json
+import csv
+import io
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -111,6 +112,8 @@ class JobCreate(BaseModel):
     quantity_required: int
     shift_time: Optional[str] = None
     description: Optional[str] = None
+    salary: Optional[str] = None
+    experience_required: Optional[str] = None
 
 class Job(BaseModel):
     model_config = ConfigDict(extra="ignore")
@@ -121,6 +124,8 @@ class Job(BaseModel):
     quantity_required: int
     shift_time: Optional[str] = None
     description: Optional[str] = None
+    salary: Optional[str] = None
+    experience_required: Optional[str] = None
     status: str  # "open", "vendor_committed", "fulfilled", "cancelled"
     created_by: str
     created_at: str
@@ -165,6 +170,27 @@ class Commitment(BaseModel):
     poc_contact: str
     commitment_timestamp: str
     status: str  # "committed", "fulfilled"
+
+class ApplicationCreate(BaseModel):
+    job_id: str
+    applicant_name: str
+    applicant_email: str
+    applicant_phone: str
+    experience: Optional[str] = None
+    cover_note: Optional[str] = None
+
+class Application(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str
+    job_id: str
+    user_id: str
+    applicant_name: str
+    applicant_email: str
+    applicant_phone: str
+    experience: Optional[str] = None
+    cover_note: Optional[str] = None
+    status: str  # "applied", "reviewed", "shortlisted", "rejected"
+    applied_at: str
 
 # ==================== UTILITIES ====================
 
@@ -305,11 +331,61 @@ async def create_job(job: JobCreate, current_user: dict = Depends(get_current_us
     await db.jobs.insert_one(job_doc)
     return Job(**job_doc)
 
+@api_router.post("/jobs/bulk-upload")
+async def bulk_upload_jobs(file: UploadFile = File(...), current_user: dict = Depends(get_current_user)):
+    if not file.filename.endswith('.csv'):
+        raise HTTPException(status_code=400, detail="Only CSV files are supported")
+    
+    contents = await file.read()
+    csv_data = contents.decode('utf-8')
+    csv_reader = csv.DictReader(io.StringIO(csv_data))
+    
+    jobs_created = 0
+    errors = []
+    
+    for idx, row in enumerate(csv_reader, start=1):
+        try:
+            # Validate required fields
+            required_fields = ['enterprise_id', 'gu_id', 'role', 'quantity_required']
+            missing_fields = [field for field in required_fields if not row.get(field)]
+            if missing_fields:
+                errors.append({"row": idx, "error": f"Missing fields: {', '.join(missing_fields)}"})
+                continue
+            
+            job_id = str(uuid.uuid4())
+            job_doc = {
+                "id": job_id,
+                "enterprise_id": row['enterprise_id'],
+                "gu_id": row['gu_id'],
+                "role": row['role'],
+                "quantity_required": int(row['quantity_required']),
+                "shift_time": row.get('shift_time'),
+                "description": row.get('description'),
+                "salary": row.get('salary'),
+                "experience_required": row.get('experience_required'),
+                "status": "open",
+                "created_by": current_user["id"],
+                "created_at": datetime.now(timezone.utc).isoformat(),
+                "committed_vendor_id": None,
+                "commitment_timestamp": None
+            }
+            await db.jobs.insert_one(job_doc)
+            jobs_created += 1
+        except Exception as e:
+            errors.append({"row": idx, "error": str(e)})
+    
+    return {
+        "jobs_created": jobs_created,
+        "errors": errors,
+        "total_rows": idx if 'idx' in locals() else 0
+    }
+
 @api_router.get("/jobs", response_model=List[Job])
 async def get_jobs(
     enterprise_id: Optional[str] = None,
     status: Optional[str] = None,
     role: Optional[str] = None,
+    city: Optional[str] = None,
     current_user: dict = Depends(get_current_user)
 ):
     query = {}
@@ -321,6 +397,16 @@ async def get_jobs(
         query["role"] = role
     
     jobs = await db.jobs.find(query, {"_id": 0}).to_list(1000)
+    
+    # Filter by city if provided
+    if city:
+        filtered_jobs = []
+        for job in jobs:
+            gu = await db.gus.find_one({"id": job["gu_id"]}, {"_id": 0})
+            if gu and gu.get("city", "").lower() == city.lower():
+                filtered_jobs.append(job)
+        jobs = filtered_jobs
+    
     return jobs
 
 @api_router.get("/jobs/vendor-view", response_model=List[Dict])
@@ -445,6 +531,82 @@ async def get_commitments(
     commitments = await db.commitments.find(query, {"_id": 0}).to_list(1000)
     return commitments
 
+# ==================== APPLICATION ROUTES ====================
+
+@api_router.post("/applications", response_model=Application)
+async def create_application(application: ApplicationCreate, current_user: dict = Depends(get_current_user)):
+    # Check if job exists and is open
+    job = await db.jobs.find_one({"id": application.job_id}, {"_id": 0})
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found")
+    if job["status"] != "open":
+        raise HTTPException(status_code=400, detail="Job is not accepting applications")
+    
+    # Check if user already applied
+    existing = await db.applications.find_one({
+        "job_id": application.job_id,
+        "user_id": current_user["id"]
+    }, {"_id": 0})
+    if existing:
+        raise HTTPException(status_code=400, detail="You have already applied to this job")
+    
+    application_id = str(uuid.uuid4())
+    application_doc = {
+        "id": application_id,
+        "user_id": current_user["id"],
+        **application.model_dump(),
+        "status": "applied",
+        "applied_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.applications.insert_one(application_doc)
+    return Application(**application_doc)
+
+@api_router.get("/applications")
+async def get_applications(
+    job_id: Optional[str] = None,
+    user_id: Optional[str] = None,
+    current_user: dict = Depends(get_current_user)
+):
+    query = {}
+    if job_id:
+        query["job_id"] = job_id
+    if user_id:
+        query["user_id"] = user_id
+    elif current_user["user_type"] == "job_seeker":
+        query["user_id"] = current_user["id"]
+    
+    applications = await db.applications.find(query, {"_id": 0}).to_list(1000)
+    
+    # Enrich with job details
+    enriched = []
+    for app in applications:
+        job = await db.jobs.find_one({"id": app["job_id"]}, {"_id": 0})
+        if job:
+            gu = await db.gus.find_one({"id": job["gu_id"]}, {"_id": 0})
+            enterprise = await db.enterprises.find_one({"id": job["enterprise_id"]}, {"_id": 0})
+            enriched.append({
+                **app,
+                "job_details": job,
+                "gu_details": gu,
+                "enterprise_details": enterprise
+            })
+    
+    return enriched
+
+@api_router.get("/applications/job/{job_id}")
+async def get_job_applications(job_id: str, current_user: dict = Depends(get_current_user)):
+    # Verify user has access to this job's applications
+    if current_user["user_type"] != "enterprise":
+        raise HTTPException(status_code=403, detail="Only enterprises can view applications")
+    
+    job = await db.jobs.find_one({"id": job_id, "enterprise_id": current_user["enterprise_id"]}, {"_id": 0})
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found or access denied")
+    
+    applications = await db.applications.find({"job_id": job_id}, {"_id": 0}).to_list(1000)
+    return applications
+
 # ==================== DASHBOARD ROUTES ====================
 
 @api_router.get("/dashboard/enterprise/{enterprise_id}")
@@ -456,12 +618,19 @@ async def get_enterprise_dashboard(enterprise_id: str, current_user: dict = Depe
     
     total_gus = await db.gus.count_documents({"enterprise_id": enterprise_id})
     
+    # Get all jobs for this enterprise
+    jobs = await db.jobs.find({"enterprise_id": enterprise_id}, {"_id": 0}).to_list(1000)
+    job_ids = [job["id"] for job in jobs]
+    
+    total_applications = await db.applications.count_documents({"job_id": {"$in": job_ids}})
+    
     return {
         "total_jobs": total_jobs,
         "open_jobs": open_jobs,
         "committed_jobs": committed_jobs,
         "fulfilled_jobs": fulfilled_jobs,
-        "total_facilities": total_gus
+        "total_facilities": total_gus,
+        "total_applications": total_applications
     }
 
 @api_router.get("/dashboard/vendor/{vendor_id}")
@@ -474,6 +643,21 @@ async def get_vendor_dashboard(vendor_id: str, current_user: dict = Depends(get_
         "total_commitments": total_commitments,
         "active_commitments": active_commitments,
         "fulfilled_commitments": fulfilled_commitments
+    }
+
+@api_router.get("/dashboard/job-seeker/{user_id}")
+async def get_job_seeker_dashboard(user_id: str, current_user: dict = Depends(get_current_user)):
+    if current_user["id"] != user_id:
+        raise HTTPException(status_code=403, detail="Access denied")
+    
+    total_applications = await db.applications.count_documents({"user_id": user_id})
+    pending_applications = await db.applications.count_documents({"user_id": user_id, "status": "applied"})
+    shortlisted_applications = await db.applications.count_documents({"user_id": user_id, "status": "shortlisted"})
+    
+    return {
+        "total_applications": total_applications,
+        "pending_applications": pending_applications,
+        "shortlisted_applications": shortlisted_applications
     }
 
 # Include router
