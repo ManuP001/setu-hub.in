@@ -44,7 +44,7 @@ const LandingPage = () => {
     { value: '10,000+', label: 'Active Workers' },
     { value: '500+', label: 'Enterprise Clients' },
     { value: '98%', label: 'Fill Rate' },
-    { value: '< 6hrs', label: 'Avg. Response Time' }
+    { value: '6hrs', label: 'Avg. Response Time' }
   ];
 
   const portalFeatures = [
