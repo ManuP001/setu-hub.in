@@ -36,7 +36,16 @@ const JobSeekerDashboard = () => {
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem('user'));
     setUser(userData);
+    if (userData) {
+      setApplicationForm(prev => ({
+        ...prev,
+        applicant_name: userData.full_name || '',
+        applicant_email: userData.email || '',
+        applicant_phone: userData.phone || ''
+      }));
+    }
     fetchJobs();
+    fetchApplications();
   }, []);
 
   useEffect(() => {
