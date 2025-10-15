@@ -287,41 +287,6 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-24 bg-gradient-to-br from-yellow-400 via-yellow-300 to-orange-300">
-        <div className="max-w-7xl mx-auto px-6">
-          {marketStats ? (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-              <div className="text-center" data-testid="stat-0">
-                <div className="text-5xl font-black text-gray-900 mb-2">{marketStats.active_workers.toLocaleString()}+</div>
-                <div className="text-lg font-semibold text-gray-800">Active Workers</div>
-              </div>
-              <div className="text-center" data-testid="stat-1">
-                <div className="text-5xl font-black text-gray-900 mb-2">{marketStats.enterprise_clients}+</div>
-                <div className="text-lg font-semibold text-gray-800">Enterprise Clients</div>
-              </div>
-              <div className="text-center" data-testid="stat-2">
-                <div className="text-5xl font-black text-gray-900 mb-2">{marketStats.fill_rate_percentage}%</div>
-                <div className="text-lg font-semibold text-gray-800">Fill Rate</div>
-              </div>
-              <div className="text-center" data-testid="stat-3">
-                <div className="text-5xl font-black text-gray-900 mb-2">{marketStats.avg_response_time_hours}hrs</div>
-                <div className="text-lg font-semibold text-gray-800">Avg. Response Time</div>
-              </div>
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-              {stats.map((stat, idx) => (
-                <div key={idx} className="text-center" data-testid={`stat-${idx}`}>
-                  <div className="text-5xl font-black text-gray-900 mb-2">{stat.value}</div>
-                  <div className="text-lg font-semibold text-gray-800">{stat.label}</div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
-
       {/* CTA Section */}
       <section className="py-24 bg-gray-900">
         <div className="max-w-4xl mx-auto px-6 text-center">
