@@ -25,10 +25,9 @@ const AvailableJobs = ({ vendor }) => {
   });
 
   useEffect(() => {
-    if (vendor?.id) {
-      fetchAvailableJobs();
-    }
-  }, [vendor]);
+    // Fetch jobs regardless of vendor profile status
+    fetchAvailableJobs();
+  }, []);
 
   useEffect(() => {
     filterJobs();
