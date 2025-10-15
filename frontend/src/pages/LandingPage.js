@@ -150,14 +150,9 @@ const LandingPage = () => {
                   <Award className="w-12 h-12 text-white" />
                 </div>
                 <div className="space-y-6">
-                  <div className="flex items-center gap-4 p-4 bg-orange-50 rounded-xl border border-orange-200">
-                    <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center">
-                      <Users className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <p className="font-bold text-gray-900">10,000+ Workers</p>
-                      <p className="text-sm text-gray-600">Vetted and ready</p>
-                    </div>
+                  <div className="text-center py-8">
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">Join SetuHub</h3>
+                    <p className="text-gray-600">Connect with top enterprises and skilled workers</p>
                   </div>
                 </div>
               </div>
