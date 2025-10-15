@@ -13,7 +13,6 @@ import { Building2, Users, Briefcase, Loader2 } from 'lucide-react';
 const Login = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [userType, setUserType] = useState('enterprise');
   const [formData, setFormData] = useState({
     email: '',
     password: ''
