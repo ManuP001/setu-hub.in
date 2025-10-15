@@ -81,17 +81,18 @@ const AvailableJobs = ({ vendor }) => {
     }
   };
 
-  if (!vendor) {
-    return (
-      <div className="p-8" data-testid="no-vendor-message">
-        <Card>
-          <CardContent className="p-12 text-center">
-            <p className="text-slate-600">Please create your vendor profile first</p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+  // Allow vendors to browse jobs even without complete profile
+  // if (!vendor) {
+  //   return (
+  //     <div className="p-8" data-testid="no-vendor-message">
+  //       <Card>
+  //         <CardContent className="p-12 text-center">
+  //           <p className="text-slate-600">Please create your vendor profile first</p>
+  //         </CardContent>
+  //       </Card>
+  //     </div>
+  //   );
+  // }
 
   const uniqueRoles = ['all', ...new Set(jobs.map(job => job.role))];
 
