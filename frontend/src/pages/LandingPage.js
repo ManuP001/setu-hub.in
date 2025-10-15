@@ -184,6 +184,91 @@ const LandingPage = () => {
         </div>
       </section>
 
+      {/* Key Positions Section */}
+      <section className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <h3 className="text-4xl font-black mb-4">Key Positions in E-Commerce & Logistics</h3>
+            <p className="text-xl text-gray-600">Specialized roles across the supply chain - from last mile delivery to fulfillment centers</p>
+          </div>
+          {loading ? (
+            <div className="text-center text-gray-500">Loading positions...</div>
+          ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {jobRoles.slice(0, 8).map((role, idx) => (
+                <Card key={idx} className="p-6 hover-lift border-2 border-gray-100 bg-white hover:border-yellow-300 transition-all cursor-pointer" data-testid={`job-role-${idx}`}>
+                  <div className="text-center space-y-4">
+                    <div className="text-5xl mb-3">{role.icon}</div>
+                    <h4 className="text-lg font-bold text-gray-900">{role.title}</h4>
+                    <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 font-semibold">
+                      {role.category.replace('_', ' ').toUpperCase()}
+                    </Badge>
+                    <p className="text-sm text-gray-600 line-clamp-2">{role.description}</p>
+                    {role.typical_salary_range && (
+                      <p className="text-sm font-semibold text-green-600">{role.typical_salary_range}</p>
+                    )}
+                  </div>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Real-Time Market Overview Section */}
+      <section className="py-24 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <h3 className="text-4xl font-black mb-4">Real-Time Market Overview</h3>
+            <p className="text-xl text-gray-600">Live dashboard showing state-wise, district-wise, and city-wise job openings</p>
+          </div>
+          {loading || !marketStats ? (
+            <div className="text-center text-gray-500">Loading market data...</div>
+          ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <Card className="p-8 text-center hover-lift border-2 border-green-200 bg-white" data-testid="market-stat-jobs">
+                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Briefcase className="w-8 h-8 text-green-600" />
+                </div>
+                <div className="text-4xl font-black text-green-600 mb-2">{marketStats.active_jobs}</div>
+                <div className="text-sm font-semibold text-gray-600 uppercase">Active Jobs</div>
+                <div className="text-xs text-green-600 mt-2 flex items-center justify-center gap-1">
+                  <Activity className="w-3 h-3" />
+                  <span>+12% this week</span>
+                </div>
+              </Card>
+              
+              <Card className="p-8 text-center hover-lift border-2 border-blue-200 bg-white" data-testid="market-stat-locations">
+                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <MapPin className="w-8 h-8 text-blue-600" />
+                </div>
+                <div className="text-4xl font-black text-blue-600 mb-2">{marketStats.total_locations}</div>
+                <div className="text-sm font-semibold text-gray-600 uppercase">Locations</div>
+                <div className="text-xs text-blue-600 mt-2">Cities covered</div>
+              </Card>
+              
+              <Card className="p-8 text-center hover-lift border-2 border-purple-200 bg-white" data-testid="market-stat-vendors">
+                <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Users className="w-8 h-8 text-purple-600" />
+                </div>
+                <div className="text-4xl font-black text-purple-600 mb-2">{marketStats.total_vendors}</div>
+                <div className="text-sm font-semibold text-gray-600 uppercase">Vendors</div>
+                <div className="text-xs text-purple-600 mt-2">Verified partners</div>
+              </Card>
+              
+              <Card className="p-8 text-center hover-lift border-2 border-orange-200 bg-white" data-testid="market-stat-fillrate">
+                <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Percent className="w-8 h-8 text-orange-600" />
+                </div>
+                <div className="text-4xl font-black text-orange-600 mb-2">{marketStats.fill_rate_percentage}%</div>
+                <div className="text-sm font-semibold text-gray-600 uppercase">Fill Rate</div>
+                <div className="text-xs text-orange-600 mt-2">Jobs successfully filled</div>
+              </Card>
+            </div>
+          )}
+        </div>
+      </section>
+
       {/* Features Section */}
       <section className="py-24 bg-gray-50">
         <div className="max-w-7xl mx-auto px-6">
