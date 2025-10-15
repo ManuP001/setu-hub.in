@@ -12,6 +12,7 @@ import Register from '@/pages/Register';
 import EnterpriseDashboard from '@/pages/EnterpriseDashboard';
 import VendorDashboard from '@/pages/VendorDashboard';
 import JobSeekerDashboard from '@/pages/JobSeekerDashboard';
+import AdminDashboard from '@/pages/AdminDashboard';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 export const API = `${BACKEND_URL}/api`;
