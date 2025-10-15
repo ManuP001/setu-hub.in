@@ -115,8 +115,8 @@ const LandingPage = () => {
             </div>
             <div className="relative animate-scale-in">
               <div className="relative bg-white rounded-2xl shadow-2xl p-8 border-2 border-gray-100">
-                <div className="absolute -top-6 -right-6 bg-yellow-gradient w-24 h-24 rounded-full flex items-center justify-center shadow-yellow">
-                  <Award className="w-12 h-12 text-gray-900" />
+                <div className="absolute -top-6 -right-6 bg-gradient-to-br from-green-400 to-blue-500 w-24 h-24 rounded-full flex items-center justify-center shadow-lg">
+                  <Award className="w-12 h-12 text-white" />
                 </div>
                 <div className="space-y-6">
                   <div className="flex items-center gap-4 p-4 bg-green-50 rounded-xl border border-green-200">
