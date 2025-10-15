@@ -65,28 +65,13 @@ const Login = () => {
         <CardHeader className="text-center pb-8 pt-8">
           <div className="flex justify-center mb-6">
             <div className="w-16 h-16 bg-yellow-gradient rounded-2xl flex items-center justify-center shadow-yellow">
-              <span className="text-3xl font-black text-gray-900">W</span>
+              <span className="text-3xl font-black text-gray-900">S</span>
             </div>
           </div>
           <CardTitle className="text-3xl font-black" data-testid="login-title">Welcome Back</CardTitle>
           <CardDescription className="text-base" data-testid="login-description">Log in to your SetuHub account</CardDescription>
         </CardHeader>
         <CardContent className="px-8 pb-8">
-          <Tabs value={userType} onValueChange={setUserType} className="mb-6">
-            <TabsList className="grid w-full grid-cols-3 h-auto p-1 bg-gray-100">
-              {userTypes.map(type => (
-                <TabsTrigger 
-                  key={type.value} 
-                  value={type.value}
-                  className="flex flex-col items-center gap-1 py-3 data-[state=active]:bg-yellow-gradient data-[state=active]:text-gray-900 data-[state=active]:shadow-md"
-                  data-testid={`tab-${type.value}`}
-                >
-                  {type.icon}
-                  <span className="font-bold text-xs">{type.label}</span>
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </Tabs>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
