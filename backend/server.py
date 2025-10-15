@@ -812,6 +812,50 @@ async def get_recent_jobs():
     
     return enriched_jobs
 
+@api_router.get("/admin/dashboard")
+async def get_admin_dashboard():
+    """Get admin dashboard statistics (public for MVP)"""
+    # Overall statistics
+    total_jobs = await db.jobs.count_documents({})
+    open_jobs = await db.jobs.count_documents({"status": "open"})
+    committed_jobs = await db.jobs.count_documents({"status": "vendor_committed"})
+    fulfilled_jobs = await db.jobs.count_documents({"status": "fulfilled"})
+    
+    total_enterprises = await db.enterprises.count_documents({})
+    total_vendors = await db.vendors.count_documents({})
+    total_workers = await db.users.count_documents({"user_type": "job_seeker"})
+    total_applications = await db.applications.count_documents({})
+    total_commitments = await db.commitments.count_documents({})
+    
+    # Recent activities
+    recent_jobs = await db.jobs.find({}, {"_id": 0}).sort("created_at", -1).limit(5).to_list(5)
+    recent_applications = await db.applications.find({}, {"_id": 0}).sort("applied_at", -1).limit(5).to_list(5)
+    recent_commitments = await db.commitments.find({}, {"_id": 0}).sort("commitment_timestamp", -1).limit(5).to_list(5)
+    
+    # Location-wise distribution
+    gus = await db.gus.find({}, {"city": 1, "state": 1, "_id": 0}).to_list(10000)
+    cities_count = len(set(gu["city"] for gu in gus))
+    states_count = len(set(gu["state"] for gu in gus))
+    
+    return {
+        "overview": {
+            "total_jobs": total_jobs,
+            "open_jobs": open_jobs,
+            "committed_jobs": committed_jobs,
+            "fulfilled_jobs": fulfilled_jobs,
+            "total_enterprises": total_enterprises,
+            "total_vendors": total_vendors,
+            "total_workers": total_workers,
+            "total_applications": total_applications,
+            "total_commitments": total_commitments,
+            "cities_covered": cities_count,
+            "states_covered": states_count
+        },
+        "recent_jobs": recent_jobs,
+        "recent_applications": recent_applications,
+        "recent_commitments": recent_commitments
+    }
+
 @api_router.post("/homepage/seed-job-roles")
 async def seed_job_roles():
     """Seed initial job roles data (admin only, one-time)"""
