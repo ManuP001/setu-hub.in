@@ -299,16 +299,29 @@ const Register = () => {
 
                 <div className="space-y-2">
                   <Label htmlFor="ven_phone" className="font-semibold">Phone Number *</Label>
-                  <Input
-                    id="ven_phone"
-                    type="tel"
-                    placeholder="+91 9876543210"
-                    value={vendorForm.phone}
-                    onChange={(e) => setVendorForm({ ...vendorForm, phone: e.target.value })}
-                    required
-                    className="h-11 border-2"
-                    data-testid="vendor-phone-input"
-                  />
+                  <div className="flex gap-2">
+                    <div className="w-20">
+                      <Input
+                        value="+91"
+                        disabled
+                        className="h-11 border-2 bg-gray-100 text-center font-semibold"
+                      />
+                    </div>
+                    <Input
+                      id="ven_phone"
+                      type="tel"
+                      placeholder="9876543210"
+                      maxLength="10"
+                      value={vendorForm.phone}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\D/g, '');
+                        setVendorForm({ ...vendorForm, phone: value });
+                      }}
+                      required
+                      className="h-11 border-2"
+                      data-testid="vendor-phone-input"
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-2">
