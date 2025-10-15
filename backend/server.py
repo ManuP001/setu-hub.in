@@ -785,6 +785,33 @@ async def get_market_stats():
         enterprise_clients=enterprise_clients
     )
 
+@api_router.get("/homepage/recent-jobs")
+async def get_recent_jobs():
+    """Get recent job postings for the homepage (public endpoint)"""
+    # Get recent open jobs with enterprise and GU details
+    jobs = await db.jobs.find({"status": "open"}, {"_id": 0}).sort("created_at", -1).limit(10).to_list(10)
+    
+    # Enrich with enterprise and GU information
+    enriched_jobs = []
+    for job in jobs:
+        enterprise = await db.enterprises.find_one({"id": job["enterprise_id"]}, {"_id": 0, "name": 1})
+        gu = await db.gus.find_one({"id": job["gu_id"]}, {"_id": 0, "city": 1, "state": 1, "facility_name": 1})
+        
+        enriched_jobs.append({
+            "id": job["id"],
+            "role": job["role"],
+            "quantity_required": job["quantity_required"],
+            "salary": job.get("salary"),
+            "shift_time": job.get("shift_time"),
+            "experience_required": job.get("experience_required"),
+            "created_at": job["created_at"],
+            "enterprise_name": enterprise["name"] if enterprise else "Unknown",
+            "location": f"{gu['city']}, {gu['state']}" if gu else "Unknown",
+            "facility_name": gu["facility_name"] if gu else "Unknown"
+        })
+    
+    return enriched_jobs
+
 @api_router.post("/homepage/seed-job-roles")
 async def seed_job_roles():
     """Seed initial job roles data (admin only, one-time)"""
