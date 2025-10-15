@@ -13,6 +13,32 @@ const LandingPage = () => {
   const [loading, setLoading] = useState(true);
   const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
+  useEffect(() => {
+    const fetchHomepageData = async () => {
+      try {
+        // Fetch job roles
+        const rolesResponse = await fetch(`${backendUrl}/api/homepage/job-roles`);
+        if (rolesResponse.ok) {
+          const rolesData = await rolesResponse.json();
+          setJobRoles(rolesData);
+        }
+
+        // Fetch market stats
+        const statsResponse = await fetch(`${backendUrl}/api/homepage/market-stats`);
+        if (statsResponse.ok) {
+          const statsData = await statsResponse.json();
+          setMarketStats(statsData);
+        }
+      } catch (error) {
+        console.error('Error fetching homepage data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHomepageData();
+  }, [backendUrl]);
+
   const handleGetStarted = () => {
     if (user) {
       if (user.user_type === 'enterprise') {
