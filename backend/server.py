@@ -36,17 +36,15 @@ api_router = APIRouter(prefix="/api")
 # ==================== MODELS ====================
 
 class UserCreate(BaseModel):
-    username: str
-    email: EmailStr
-    password: str
+    email: Optional[EmailStr] = None  # Not required for workers
+    password: Optional[str] = None  # Not required for workers initially
     user_type: str  # "enterprise", "vendor", "job_seeker"
     full_name: str
-    phone: Optional[str] = None
+    phone: str
     # Enterprise specific
-    enterprise_id: Optional[str] = None
-    role: Optional[str] = None  # "central_hr", "regional_admin", "hub_manager"
+    enterprise_name: Optional[str] = None  # Selected from dropdown
     # Vendor specific
-    vendor_id: Optional[str] = None
+    vendor_name: Optional[str] = None
 
 class UserLogin(BaseModel):
     email: str
