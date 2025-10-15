@@ -221,27 +221,50 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
 
 @api_router.post("/auth/register")
 async def register(user_data: UserCreate):
-    # Check if user exists
-    existing = await db.users.find_one({"email": user_data.email}, {"_id": 0})
-    if existing:
-        raise HTTPException(status_code=400, detail="User already exists")
-    
     user_id = str(uuid.uuid4())
-    hashed_pwd = hash_password(user_data.password)
     
-    user_doc = {
-        "id": user_id,
-        "username": user_data.username,
-        "email": user_data.email,
-        "password": hashed_pwd,
-        "user_type": user_data.user_type,
-        "full_name": user_data.full_name,
-        "phone": user_data.phone,
-        "enterprise_id": user_data.enterprise_id,
-        "vendor_id": user_data.vendor_id,
-        "role": user_data.role,
-        "created_at": datetime.now(timezone.utc).isoformat()
-    }
+    # Different validation for different user types
+    if user_data.user_type == "job_seeker":
+        # Workers don't need email/password initially (phone-based)
+        existing = await db.users.find_one({"phone": user_data.phone, "user_type": "job_seeker"}, {"_id": 0})
+        if existing:
+            raise HTTPException(status_code=400, detail="Worker with this phone number already exists")
+        
+        user_doc = {
+            "id": user_id,
+            "email": user_data.email or f"worker_{user_id}@setuhub.com",  # Temp email
+            "password": hash_password(user_data.password or "temp123"),  # Temp password
+            "user_type": user_data.user_type,
+            "full_name": user_data.full_name,
+            "phone": user_data.phone,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+    else:
+        # Enterprise and Vendor need email
+        if not user_data.email or not user_data.password:
+            raise HTTPException(status_code=400, detail="Email and password required")
+        
+        existing = await db.users.find_one({"email": user_data.email}, {"_id": 0})
+        if existing:
+            raise HTTPException(status_code=400, detail="User with this email already exists")
+        
+        hashed_pwd = hash_password(user_data.password)
+        
+        user_doc = {
+            "id": user_id,
+            "email": user_data.email,
+            "password": hashed_pwd,
+            "user_type": user_data.user_type,
+            "full_name": user_data.full_name,
+            "phone": user_data.phone,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        # Store enterprise or vendor name temporarily
+        if user_data.user_type == "enterprise":
+            user_doc["enterprise_name_selected"] = user_data.enterprise_name
+        elif user_data.user_type == "vendor":
+            user_doc["vendor_name_selected"] = user_data.vendor_name
     
     await db.users.insert_one(user_doc)
     token = create_token({"user_id": user_id, "user_type": user_data.user_type})
