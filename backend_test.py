@@ -651,6 +651,202 @@ class SetuHubAPITester:
         else:
             self.log_test("Market Stats Response Time", False, error=f"Endpoint failed: {status}")
 
+    def test_authentication_system_comprehensive(self):
+        """Comprehensive authentication system testing as per review request"""
+        print("\n🔍 Testing Authentication System Comprehensively...")
+        
+        # Generate unique identifiers for this test run
+        timestamp = datetime.now().strftime('%H%M%S%f')[:-3]  # Include milliseconds
+        
+        # Test 1: Enterprise Registration & Login
+        print("\n--- Testing Enterprise Registration & Login ---")
+        enterprise_email = f"enterprise_auth_{timestamp}@testdomain.com"
+        enterprise_phone = f"98765{timestamp[-5:]}"  # 10 digit phone
+        
+        enterprise_data = {
+            "email": enterprise_email,
+            "password": "SecurePass123!",
+            "user_type": "enterprise",
+            "full_name": "Enterprise Test Manager",
+            "phone": enterprise_phone,
+            "enterprise_name": "Flipkart"
+        }
+        
+        success, response, status = self.make_request('POST', 'auth/register', enterprise_data, expected_status=200)
+        if success and 'token' in response and 'user' in response:
+            user = response['user']
+            
+            # Verify username field is set to email
+            if user.get('username') == enterprise_email:
+                self.log_test("Enterprise Registration - Username Field", True, f"Username correctly set to email: {user['username']}")
+            else:
+                self.log_test("Enterprise Registration - Username Field", False, error=f"Username should be email, got: {user.get('username')}")
+            
+            # Verify user_type is 'enterprise'
+            if user.get('user_type') == 'enterprise':
+                self.log_test("Enterprise Registration - User Type", True, f"User type correctly set to: {user['user_type']}")
+            else:
+                self.log_test("Enterprise Registration - User Type", False, error=f"User type should be 'enterprise', got: {user.get('user_type')}")
+            
+            # Verify email field
+            if user.get('email') == enterprise_email:
+                self.log_test("Enterprise Registration - Email Field", True, f"Email correctly set: {user['email']}")
+            else:
+                self.log_test("Enterprise Registration - Email Field", False, error=f"Email mismatch: expected {enterprise_email}, got {user.get('email')}")
+            
+            # Store token for login test
+            enterprise_token = response['token']
+            self.log_test("Enterprise Registration", True, f"User ID: {user['id']}, Token received")
+            
+            # Test Enterprise Login
+            login_data = {
+                "email": enterprise_email,
+                "password": "SecurePass123!"
+            }
+            
+            success_login, response_login, status_login = self.make_request('POST', 'auth/login', login_data, expected_status=200)
+            if success_login and 'token' in response_login and 'user' in response_login:
+                login_user = response_login['user']
+                
+                # Verify login returns correct user data
+                if login_user.get('username') == enterprise_email and login_user.get('user_type') == 'enterprise':
+                    self.log_test("Enterprise Login - User Data", True, f"Login returned correct user data")
+                else:
+                    self.log_test("Enterprise Login - User Data", False, error=f"Login user data mismatch")
+                
+                self.log_test("Enterprise Login", True, f"Login successful, token received")
+            else:
+                self.log_test("Enterprise Login", False, error=f"Status: {status_login}, Response: {response_login}")
+        else:
+            self.log_test("Enterprise Registration", False, error=f"Status: {status}, Response: {response}")
+        
+        # Test 2: Vendor Registration & Login
+        print("\n--- Testing Vendor Registration & Login ---")
+        vendor_email = f"vendor_auth_{timestamp}@testdomain.com"
+        vendor_phone = f"87654{timestamp[-5:]}"  # 10 digit phone
+        
+        vendor_data = {
+            "email": vendor_email,
+            "password": "VendorPass123!",
+            "user_type": "vendor",
+            "full_name": "Vendor Test Manager",
+            "phone": vendor_phone,
+            "vendor_name": "Test Manpower Solutions"
+        }
+        
+        success, response, status = self.make_request('POST', 'auth/register', vendor_data, expected_status=200)
+        if success and 'token' in response and 'user' in response:
+            user = response['user']
+            
+            # Verify username field is set to email
+            if user.get('username') == vendor_email:
+                self.log_test("Vendor Registration - Username Field", True, f"Username correctly set to email: {user['username']}")
+            else:
+                self.log_test("Vendor Registration - Username Field", False, error=f"Username should be email, got: {user.get('username')}")
+            
+            # Verify user_type is 'vendor'
+            if user.get('user_type') == 'vendor':
+                self.log_test("Vendor Registration - User Type", True, f"User type correctly set to: {user['user_type']}")
+            else:
+                self.log_test("Vendor Registration - User Type", False, error=f"User type should be 'vendor', got: {user.get('user_type')}")
+            
+            # Verify email field
+            if user.get('email') == vendor_email:
+                self.log_test("Vendor Registration - Email Field", True, f"Email correctly set: {user['email']}")
+            else:
+                self.log_test("Vendor Registration - Email Field", False, error=f"Email mismatch: expected {vendor_email}, got {user.get('email')}")
+            
+            self.log_test("Vendor Registration", True, f"User ID: {user['id']}, Token received")
+            
+            # Test Vendor Login
+            login_data = {
+                "email": vendor_email,
+                "password": "VendorPass123!"
+            }
+            
+            success_login, response_login, status_login = self.make_request('POST', 'auth/login', login_data, expected_status=200)
+            if success_login and 'token' in response_login and 'user' in response_login:
+                login_user = response_login['user']
+                
+                # Verify login returns correct user data
+                if login_user.get('username') == vendor_email and login_user.get('user_type') == 'vendor':
+                    self.log_test("Vendor Login - User Data", True, f"Login returned correct user data")
+                else:
+                    self.log_test("Vendor Login - User Data", False, error=f"Login user data mismatch")
+                
+                self.log_test("Vendor Login", True, f"Login successful, token received")
+            else:
+                self.log_test("Vendor Login", False, error=f"Status: {status_login}, Response: {response_login}")
+        else:
+            self.log_test("Vendor Registration", False, error=f"Status: {status}, Response: {response}")
+        
+        # Test 3: Worker Registration (Job Seeker)
+        print("\n--- Testing Worker Registration ---")
+        worker_phone = f"76543{timestamp[-5:]}"  # 10 digit phone
+        
+        worker_data = {
+            "user_type": "job_seeker",
+            "full_name": "Worker Test Person",
+            "phone": worker_phone
+            # Note: No email or password provided for worker
+        }
+        
+        success, response, status = self.make_request('POST', 'auth/register', worker_data, expected_status=200)
+        if success and 'token' in response and 'user' in response:
+            user = response['user']
+            
+            # Verify username field is set to phone number
+            if user.get('username') == worker_phone:
+                self.log_test("Worker Registration - Username Field", True, f"Username correctly set to phone: {user['username']}")
+            else:
+                self.log_test("Worker Registration - Username Field", False, error=f"Username should be phone ({worker_phone}), got: {user.get('username')}")
+            
+            # Verify user_type is 'job_seeker'
+            if user.get('user_type') == 'job_seeker':
+                self.log_test("Worker Registration - User Type", True, f"User type correctly set to: {user['user_type']}")
+            else:
+                self.log_test("Worker Registration - User Type", False, error=f"User type should be 'job_seeker', got: {user.get('user_type')}")
+            
+            # Verify temporary email is generated
+            if user.get('email') and '@setuhub.com' in user['email']:
+                self.log_test("Worker Registration - Temporary Email", True, f"Temporary email generated: {user['email']}")
+            else:
+                self.log_test("Worker Registration - Temporary Email", False, error=f"Temporary email not generated correctly, got: {user.get('email')}")
+            
+            # Verify phone field
+            if user.get('phone') == worker_phone:
+                self.log_test("Worker Registration - Phone Field", True, f"Phone correctly set: {user['phone']}")
+            else:
+                self.log_test("Worker Registration - Phone Field", False, error=f"Phone mismatch: expected {worker_phone}, got {user.get('phone')}")
+            
+            self.log_test("Worker Registration", True, f"User ID: {user['id']}, Token received")
+        else:
+            self.log_test("Worker Registration", False, error=f"Status: {status}, Response: {response}")
+
+    def run_authentication_tests_only(self):
+        """Run only the authentication system tests"""
+        print("🚀 Starting Authentication System Tests...")
+        print(f"Testing against: {self.base_url}")
+        
+        # Run only authentication tests
+        self.test_authentication_system_comprehensive()
+        
+        # Print summary
+        print(f"\n📊 Authentication Test Summary:")
+        print(f"Tests Run: {self.tests_run}")
+        print(f"Tests Passed: {self.tests_passed}")
+        print(f"Tests Failed: {self.tests_run - self.tests_passed}")
+        print(f"Success Rate: {(self.tests_passed/self.tests_run)*100:.1f}%")
+        
+        # Return test results for reporting
+        return {
+            "total_tests": self.tests_run,
+            "passed_tests": self.tests_passed,
+            "failed_tests": self.tests_run - self.tests_passed,
+            "success_rate": (self.tests_passed/self.tests_run)*100,
+            "test_details": self.test_results
+        }
+
     def run_homepage_tests_only(self):
         """Run only the homepage API tests"""
         print("🚀 Starting Homepage API Tests...")
