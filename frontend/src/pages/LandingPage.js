@@ -237,7 +237,7 @@ const LandingPage = () => {
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-yellow-gradient rounded-lg flex items-center justify-center">
-                <span className="text-xl font-black text-gray-900">W</span>
+                <span className="text-xl font-black text-gray-900">S</span>
               </div>
               <span className="text-xl font-black text-white">SetuHub</span>
             </div>
