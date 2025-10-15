@@ -80,21 +80,27 @@ const Register = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="px-8 pb-8">
-          <Tabs value={userType} onValueChange={setUserType} className="mb-6">
-            <TabsList className="grid w-full grid-cols-3 h-auto p-1 bg-gray-100">
-              {userTypes.map(type => (
-                <TabsTrigger 
-                  key={type.value} 
-                  value={type.value}
-                  className="flex flex-col items-center gap-1 py-3 data-[state=active]:bg-yellow-gradient data-[state=active]:text-gray-900 data-[state=active]:shadow-md"
-                  data-testid={`tab-${type.value}`}
-                >
-                  {type.icon}
-                  <span className="font-bold text-xs">{type.label}</span>
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </Tabs>
+          <div className="mb-6">
+            <Label className="text-sm font-semibold mb-3 block">I am registering as:</Label>
+            <Tabs value={userType} onValueChange={setUserType}>
+              <TabsList className="grid w-full grid-cols-3 h-auto p-1 bg-gray-100">
+                {userTypes.map(type => (
+                  <TabsTrigger 
+                    key={type.value} 
+                    value={type.value}
+                    className="flex flex-col items-center gap-1 py-3 data-[state=active]:bg-yellow-gradient data-[state=active]:text-gray-900 data-[state=active]:shadow-md"
+                    data-testid={`tab-${type.value}`}
+                  >
+                    {type.icon}
+                    <span className="font-bold text-xs">{type.label}</span>
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </Tabs>
+            <div className="mt-2 text-center">
+              <p className="text-xs text-gray-600">{userTypes.find(t => t.value === userType)?.desc}</p>
+            </div>
+          </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
