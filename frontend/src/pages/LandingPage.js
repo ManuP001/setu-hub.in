@@ -186,9 +186,6 @@ const LandingPage = () => {
                       {role.category.replace('_', ' ').toUpperCase()}
                     </Badge>
                     <p className="text-sm text-gray-600 line-clamp-2">{role.description}</p>
-                    {role.typical_salary_range && (
-                      <p className="text-sm font-semibold text-green-600">{role.typical_salary_range}</p>
-                    )}
                   </div>
                 </Card>
               ))}
