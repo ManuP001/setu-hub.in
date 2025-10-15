@@ -651,6 +651,33 @@ class SetuHubAPITester:
         else:
             self.log_test("Market Stats Response Time", False, error=f"Endpoint failed: {status}")
 
+    def run_homepage_tests_only(self):
+        """Run only the homepage API tests"""
+        print("🚀 Starting Homepage API Tests...")
+        print(f"Testing against: {self.base_url}")
+        
+        # Run only homepage tests
+        self.test_homepage_job_roles_seeding()
+        self.test_homepage_job_roles_endpoint()
+        self.test_homepage_market_stats_endpoint()
+        self.test_homepage_response_times()
+        
+        # Print summary
+        print(f"\n📊 Homepage Test Summary:")
+        print(f"Tests Run: {self.tests_run}")
+        print(f"Tests Passed: {self.tests_passed}")
+        print(f"Tests Failed: {self.tests_run - self.tests_passed}")
+        print(f"Success Rate: {(self.tests_passed/self.tests_run)*100:.1f}%")
+        
+        # Return test results for reporting
+        return {
+            "total_tests": self.tests_run,
+            "passed_tests": self.tests_passed,
+            "failed_tests": self.tests_run - self.tests_passed,
+            "success_rate": (self.tests_passed/self.tests_run)*100,
+            "test_details": self.test_results
+        }
+
     def run_all_tests(self):
         """Run all backend API tests"""
         print("🚀 Starting SetuHub Backend API Tests...")
