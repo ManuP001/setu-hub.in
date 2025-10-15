@@ -79,7 +79,7 @@ const LandingPage = () => {
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 bg-yellow-gradient rounded-xl flex items-center justify-center shadow-yellow">
-              <span className="text-2xl font-black text-gray-900">W</span>
+              <span className="text-2xl font-black text-gray-900">S</span>
             </div>
             <div>
               <h1 className="text-2xl font-black text-gray-900" data-testid="landing-logo">SetuHub</h1>
