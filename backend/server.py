@@ -190,6 +190,26 @@ class Application(BaseModel):
     status: str  # "applied", "reviewed", "shortlisted", "rejected"
     applied_at: str
 
+class JobRole(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str
+    title: str
+    description: str
+    icon: str  # emoji or icon name
+    category: str  # "warehouse", "delivery", "customer_service", etc.
+    typical_salary_range: Optional[str] = None
+    key_responsibilities: List[str]
+    required_skills: List[str]
+
+class MarketStats(BaseModel):
+    active_jobs: int
+    total_locations: int
+    total_vendors: int
+    fill_rate_percentage: float
+    avg_response_time_hours: float
+    active_workers: int
+    enterprise_clients: int
+
 # ==================== UTILITIES ====================
 
 def hash_password(password: str) -> str:
