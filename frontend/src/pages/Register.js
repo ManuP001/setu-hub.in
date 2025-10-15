@@ -71,7 +71,7 @@ const Register = () => {
         <CardHeader className="text-center pb-8 pt-8">
           <div className="flex justify-center mb-6">
             <div className="w-16 h-16 bg-yellow-gradient rounded-2xl flex items-center justify-center shadow-yellow">
-              <span className="text-3xl font-black text-gray-900">W</span>
+              <span className="text-3xl font-black text-gray-900">S</span>
             </div>
           </div>
           <CardTitle className="text-3xl font-black" data-testid="register-title">Create Account</CardTitle>
