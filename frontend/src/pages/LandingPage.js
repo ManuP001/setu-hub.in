@@ -150,24 +150,6 @@ const LandingPage = () => {
                   <Award className="w-12 h-12 text-white" />
                 </div>
                 <div className="space-y-6">
-                  <div className="flex items-center gap-4 p-4 bg-green-50 rounded-xl border border-green-200">
-                    <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
-                      <CheckCircle2 className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <p className="font-bold text-gray-900">98% Fill Rate</p>
-                      <p className="text-sm text-gray-600">Jobs filled successfully</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4 p-4 bg-blue-50 rounded-xl border border-blue-200">
-                    <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
-                      <Clock className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <p className="font-bold text-gray-900">&lt; 6 Hours</p>
-                      <p className="text-sm text-gray-600">Average response time</p>
-                    </div>
-                  </div>
                   <div className="flex items-center gap-4 p-4 bg-orange-50 rounded-xl border border-orange-200">
                     <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center">
                       <Users className="w-6 h-6 text-white" />
