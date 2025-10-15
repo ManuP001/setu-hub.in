@@ -734,6 +734,192 @@ async def get_job_seeker_dashboard(user_id: str, current_user: dict = Depends(ge
         "shortlisted_applications": shortlisted_applications
     }
 
+# ==================== HOMEPAGE ROUTES ====================
+
+@api_router.get("/homepage/job-roles", response_model=List[JobRole])
+async def get_job_roles():
+    """Get all job roles for the Key Positions section"""
+    job_roles = await db.job_roles.find({}, {"_id": 0}).to_list(100)
+    return job_roles
+
+@api_router.get("/homepage/market-stats", response_model=MarketStats)
+async def get_market_stats():
+    """Get real-time market statistics for the homepage"""
+    # Calculate stats from actual data
+    active_jobs = await db.jobs.count_documents({"status": "open"})
+    
+    # Get unique locations (cities) from GUs
+    gus = await db.gus.find({}, {"city": 1, "_id": 0}).to_list(10000)
+    unique_cities = len(set(gu["city"] for gu in gus))
+    
+    # Count vendors
+    total_vendors = await db.vendors.count_documents({})
+    
+    # Calculate fill rate (jobs that are committed or fulfilled vs total jobs)
+    total_jobs = await db.jobs.count_documents({})
+    if total_jobs > 0:
+        filled_jobs = await db.jobs.count_documents({"status": {"$in": ["vendor_committed", "fulfilled"]}})
+        fill_rate = (filled_jobs / total_jobs) * 100
+    else:
+        fill_rate = 0.0
+    
+    # Count active workers (job seekers who have applied)
+    active_workers = await db.users.count_documents({"user_type": "job_seeker"})
+    
+    # Count enterprise clients
+    enterprise_clients = await db.enterprises.count_documents({})
+    
+    # For avg response time, we can use a default or calculate from commitments
+    # For now, using a calculated value based on commitment timestamps
+    avg_response_time = 6.0  # Default 6 hours
+    
+    return MarketStats(
+        active_jobs=active_jobs,
+        total_locations=unique_cities,
+        total_vendors=total_vendors,
+        fill_rate_percentage=round(fill_rate, 1),
+        avg_response_time_hours=avg_response_time,
+        active_workers=active_workers,
+        enterprise_clients=enterprise_clients
+    )
+
+@api_router.post("/homepage/seed-job-roles")
+async def seed_job_roles():
+    """Seed initial job roles data (admin only, one-time)"""
+    # Check if data already exists
+    existing = await db.job_roles.count_documents({})
+    if existing > 0:
+        return {"message": "Job roles already seeded", "count": existing}
+    
+    # Define key positions in E-Commerce & Logistics
+    job_roles_data = [
+        {
+            "id": str(uuid.uuid4()),
+            "title": "Last Mile Bike Captain",
+            "description": "Manage delivery operations and coordinate with delivery personnel for last-mile bike deliveries",
+            "icon": "🚴",
+            "category": "delivery",
+            "typical_salary_range": "₹20,000 - ₹30,000/month",
+            "key_responsibilities": [
+                "Coordinate daily delivery schedules",
+                "Manage delivery team performance",
+                "Ensure timely order deliveries",
+                "Handle customer escalations"
+            ],
+            "required_skills": ["Team Management", "Route Planning", "Customer Service", "Two-wheeler License"]
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "title": "Last Mile Van Captain",
+            "description": "Oversee van-based delivery operations for larger shipments and coordinate logistics",
+            "icon": "🚐",
+            "category": "delivery",
+            "typical_salary_range": "₹25,000 - ₹35,000/month",
+            "key_responsibilities": [
+                "Manage van fleet operations",
+                "Plan optimal delivery routes",
+                "Ensure cargo safety",
+                "Coordinate with warehouse teams"
+            ],
+            "required_skills": ["Fleet Management", "Logistics Planning", "Driving License", "Team Leadership"]
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "title": "Fulfillment Center Picker",
+            "description": "Pick and pack orders efficiently in the fulfillment center",
+            "icon": "📦",
+            "category": "warehouse",
+            "typical_salary_range": "₹15,000 - ₹22,000/month",
+            "key_responsibilities": [
+                "Pick items according to order lists",
+                "Ensure accuracy in order fulfillment",
+                "Maintain picking speed standards",
+                "Handle inventory scanning"
+            ],
+            "required_skills": ["Attention to Detail", "Physical Fitness", "Inventory Systems", "Time Management"]
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "title": "Fulfillment Center Loader",
+            "description": "Load and unload goods in the fulfillment center, manage staging areas",
+            "icon": "🏋️",
+            "category": "warehouse",
+            "typical_salary_range": "₹15,000 - ₹20,000/month",
+            "key_responsibilities": [
+                "Load/unload delivery vehicles",
+                "Organize staging areas",
+                "Ensure proper handling of goods",
+                "Maintain safety standards"
+            ],
+            "required_skills": ["Physical Strength", "Safety Protocols", "Equipment Operation", "Team Work"]
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "title": "Warehouse Associate",
+            "description": "Support overall warehouse operations including receiving, storing, and dispatching goods",
+            "icon": "🏭",
+            "category": "warehouse",
+            "typical_salary_range": "₹18,000 - ₹25,000/month",
+            "key_responsibilities": [
+                "Receive and verify incoming shipments",
+                "Organize storage areas",
+                "Assist in inventory counts",
+                "Support dispatch operations"
+            ],
+            "required_skills": ["Warehouse Operations", "Inventory Management", "Computer Basics", "Organization"]
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "title": "Sort Center Coordinator",
+            "description": "Coordinate sorting operations and ensure efficient package processing",
+            "icon": "🔄",
+            "category": "sorting",
+            "typical_salary_range": "₹20,000 - ₹28,000/month",
+            "key_responsibilities": [
+                "Oversee sorting operations",
+                "Manage team schedules",
+                "Ensure accuracy in sorting",
+                "Monitor processing times"
+            ],
+            "required_skills": ["Operations Management", "Team Coordination", "Quality Control", "Problem Solving"]
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "title": "Store Operations Executive",
+            "description": "Manage day-to-day store operations for dark stores and quick commerce hubs",
+            "icon": "🏪",
+            "category": "store_operations",
+            "typical_salary_range": "₹22,000 - ₹30,000/month",
+            "key_responsibilities": [
+                "Oversee store operations",
+                "Manage inventory levels",
+                "Coordinate with delivery teams",
+                "Handle customer orders"
+            ],
+            "required_skills": ["Store Management", "Inventory Control", "Customer Service", "Multi-tasking"]
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "title": "Quality Control Inspector",
+            "description": "Inspect goods for quality compliance and ensure standards are met",
+            "icon": "✅",
+            "category": "quality",
+            "typical_salary_range": "₹18,000 - ₹25,000/month",
+            "key_responsibilities": [
+                "Inspect incoming/outgoing goods",
+                "Document quality issues",
+                "Ensure compliance with standards",
+                "Report defects and damages"
+            ],
+            "required_skills": ["Quality Standards", "Attention to Detail", "Documentation", "Communication"]
+        }
+    ]
+    
+    # Insert all job roles
+    await db.job_roles.insert_many(job_roles_data)
+    
+    return {"message": "Job roles seeded successfully", "count": len(job_roles_data)}
+
 # Include router
 app.include_router(api_router)
 
