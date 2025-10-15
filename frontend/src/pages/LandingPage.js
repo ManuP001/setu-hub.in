@@ -10,6 +10,7 @@ const LandingPage = () => {
   const user = JSON.parse(localStorage.getItem('user') || 'null');
   const [jobRoles, setJobRoles] = useState([]);
   const [marketStats, setMarketStats] = useState(null);
+  const [recentJobs, setRecentJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
@@ -28,6 +29,13 @@ const LandingPage = () => {
         if (statsResponse.ok) {
           const statsData = await statsResponse.json();
           setMarketStats(statsData);
+        }
+
+        // Fetch recent jobs
+        const jobsResponse = await fetch(`${backendUrl}/api/homepage/recent-jobs`);
+        if (jobsResponse.ok) {
+          const jobsData = await jobsResponse.json();
+          setRecentJobs(jobsData);
         }
       } catch (error) {
         console.error('Error fetching homepage data:', error);
