@@ -204,7 +204,7 @@ const LandingPage = () => {
           {loading || !marketStats ? (
             <div className="text-center text-gray-500">Loading market data...</div>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
               <Card className="p-8 text-center hover-lift border-2 border-green-200 bg-white" data-testid="market-stat-jobs">
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Briefcase className="w-8 h-8 text-green-600" />
@@ -233,15 +233,6 @@ const LandingPage = () => {
                 <div className="text-4xl font-black text-purple-600 mb-2">{marketStats.total_vendors}</div>
                 <div className="text-sm font-semibold text-gray-600 uppercase">Vendors</div>
                 <div className="text-xs text-purple-600 mt-2">Verified partners</div>
-              </Card>
-              
-              <Card className="p-8 text-center hover-lift border-2 border-orange-200 bg-white" data-testid="market-stat-fillrate">
-                <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Percent className="w-8 h-8 text-orange-600" />
-                </div>
-                <div className="text-4xl font-black text-orange-600 mb-2">{marketStats.fill_rate_percentage}%</div>
-                <div className="text-sm font-semibold text-gray-600 uppercase">Fill Rate</div>
-                <div className="text-xs text-orange-600 mt-2">Jobs successfully filled</div>
               </Card>
             </div>
           )}
