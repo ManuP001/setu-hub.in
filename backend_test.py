@@ -673,6 +673,12 @@ class SetuHubAPITester:
         self.test_job_seeker_view()
         self.test_data_persistence()
         
+        # NEW: Test homepage endpoints
+        self.test_homepage_job_roles_seeding()
+        self.test_homepage_job_roles_endpoint()
+        self.test_homepage_market_stats_endpoint()
+        self.test_homepage_response_times()
+        
         # Print summary
         print(f"\n📊 Test Summary:")
         print(f"Tests Run: {self.tests_run}")
