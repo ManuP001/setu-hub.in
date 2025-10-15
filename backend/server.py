@@ -284,6 +284,39 @@ async def login(credentials: UserLogin):
 async def get_me(current_user: dict = Depends(get_current_user)):
     return User(**{k: v for k, v in current_user.items() if k != "password"})
 
+# Get list of enterprises for dropdown (can be integrated with Google Sheets)
+@api_router.get("/enterprise-list")
+async def get_enterprise_list():
+    # For now, return predefined list (can be fetched from Google Sheets or admin panel)
+    enterprises = [
+        "Flipkart",
+        "Amazon India",
+        "Meesho",
+        "Zepto",
+        "Blinkit",
+        "Swiggy Instamart",
+        "Zomato",
+        "Swiggy",
+        "BigBasket",
+        "Dunzo",
+        "Delhivery",
+        "Shadowfax",
+        "Ecom Express",
+        "Blue Dart",
+        "DTDC",
+        "Ekart Logistics",
+        "Myntra",
+        "Nykaa",
+        "FirstCry",
+        "Licious",
+        "Milk Basket",
+        "JioMart",
+        "Reliance Retail",
+        "DMart Ready",
+        "Other"
+    ]
+    return {"enterprises": sorted(enterprises)}
+
 # ==================== ENTERPRISE ROUTES ====================
 
 @api_router.post("/enterprises", response_model=Enterprise)
