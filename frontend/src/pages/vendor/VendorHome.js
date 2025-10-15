@@ -28,11 +28,27 @@ const VendorHome = ({ vendor }) => {
   if (!vendor) {
     return (
       <div className="p-8" data-testid="vendor-setup-required">
-        <Card>
-          <CardContent className="p-12 text-center">
-            <h2 className="text-2xl font-bold mb-4">Complete Your Setup</h2>
-            <p className="text-slate-600 mb-6">Please create your vendor profile to get started</p>
-            <Button onClick={() => navigate('/vendor/profile')} data-testid="setup-profile-btn">Setup Profile</Button>
+        <Card className="mb-6 bg-yellow-50 border-yellow-200">
+          <CardContent className="p-8 text-center">
+            <h2 className="text-2xl font-bold mb-4">Complete Your Vendor Profile</h2>
+            <p className="text-slate-700 mb-6">Create your vendor profile to commit to jobs and track your performance</p>
+            <Button onClick={() => navigate('/vendor/profile')} size="lg" className="bg-yellow-600 hover:bg-yellow-700" data-testid="setup-profile-btn">Setup Profile Now</Button>
+          </CardContent>
+        </Card>
+        
+        {/* Quick Actions - Allow browsing jobs even without profile */}
+        <Card data-testid="quick-actions-card">
+          <CardHeader>
+            <CardTitle>Get Started</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <p className="text-sm text-slate-600">You can browse available jobs right now. To commit to jobs, you'll need to complete your vendor profile.</p>
+              <Button onClick={() => navigate('/vendor/jobs')} className="w-full" size="lg" data-testid="browse-jobs-btn">
+                <Briefcase className="w-5 h-5 mr-2" />
+                Browse Available Jobs
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
