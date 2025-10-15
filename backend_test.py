@@ -501,6 +501,156 @@ class SetuHubAPITester:
             else:
                 self.log_test("GU Data Persistence", False, error=f"Status: {status}")
 
+    def test_homepage_job_roles_seeding(self):
+        """Test seeding job roles data for homepage"""
+        print("\n🔍 Testing Homepage Job Roles Seeding...")
+        
+        # First seed the job roles data
+        success, response, status = self.make_request('POST', 'homepage/seed-job-roles', expected_status=200)
+        if success and 'count' in response:
+            self.log_test("Job Roles Seeding", True, f"Seeded {response.get('count', 0)} job roles")
+        else:
+            # If already seeded, that's also fine
+            if status == 200 and 'already seeded' in str(response):
+                self.log_test("Job Roles Seeding", True, "Job roles already seeded")
+            else:
+                self.log_test("Job Roles Seeding", False, error=f"Status: {status}, Response: {response}")
+
+    def test_homepage_job_roles_endpoint(self):
+        """Test homepage job roles endpoint"""
+        print("\n🔍 Testing Homepage Job Roles Endpoint...")
+        
+        success, response, status = self.make_request('GET', 'homepage/job-roles', expected_status=200)
+        if success and isinstance(response, list):
+            # Check if we have 8 job roles as expected
+            if len(response) == 8:
+                self.log_test("Job Roles Count", True, f"Found exactly 8 job roles")
+            else:
+                self.log_test("Job Roles Count", False, error=f"Expected 8 job roles, got {len(response)}")
+            
+            # Check structure of first job role if available
+            if len(response) > 0:
+                job_role = response[0]
+                required_fields = ['id', 'title', 'description', 'icon', 'category', 'typical_salary_range', 'key_responsibilities', 'required_skills']
+                missing_fields = [field for field in required_fields if field not in job_role]
+                
+                if not missing_fields:
+                    self.log_test("Job Role Structure", True, f"All required fields present: {list(job_role.keys())}")
+                    
+                    # Check if icon is present (should be emoji)
+                    if job_role.get('icon') and len(job_role['icon']) > 0:
+                        self.log_test("Job Role Icon", True, f"Icon present: {job_role['icon']}")
+                    else:
+                        self.log_test("Job Role Icon", False, error="Icon missing or empty")
+                    
+                    # Check if salary range is present
+                    if job_role.get('typical_salary_range'):
+                        self.log_test("Job Role Salary Range", True, f"Salary range: {job_role['typical_salary_range']}")
+                    else:
+                        self.log_test("Job Role Salary Range", False, error="Salary range missing")
+                    
+                    # Check if responsibilities and skills are lists
+                    if isinstance(job_role.get('key_responsibilities'), list) and len(job_role['key_responsibilities']) > 0:
+                        self.log_test("Job Role Responsibilities", True, f"Found {len(job_role['key_responsibilities'])} responsibilities")
+                    else:
+                        self.log_test("Job Role Responsibilities", False, error="Responsibilities not a list or empty")
+                    
+                    if isinstance(job_role.get('required_skills'), list) and len(job_role['required_skills']) > 0:
+                        self.log_test("Job Role Skills", True, f"Found {len(job_role['required_skills'])} skills")
+                    else:
+                        self.log_test("Job Role Skills", False, error="Skills not a list or empty")
+                        
+                else:
+                    self.log_test("Job Role Structure", False, error=f"Missing fields: {missing_fields}")
+            else:
+                self.log_test("Job Role Structure", False, error="No job roles returned")
+        else:
+            self.log_test("Homepage Job Roles Endpoint", False, error=f"Status: {status}, Response: {response}")
+
+    def test_homepage_market_stats_endpoint(self):
+        """Test homepage market stats endpoint"""
+        print("\n🔍 Testing Homepage Market Stats Endpoint...")
+        
+        success, response, status = self.make_request('GET', 'homepage/market-stats', expected_status=200)
+        if success and isinstance(response, dict):
+            # Check required fields
+            required_fields = ['active_jobs', 'total_locations', 'total_vendors', 'fill_rate_percentage', 'avg_response_time_hours', 'active_workers', 'enterprise_clients']
+            missing_fields = [field for field in required_fields if field not in response]
+            
+            if not missing_fields:
+                self.log_test("Market Stats Structure", True, f"All required fields present")
+                
+                # Check if values are numeric and reasonable
+                numeric_fields = ['active_jobs', 'total_locations', 'total_vendors', 'active_workers', 'enterprise_clients']
+                float_fields = ['fill_rate_percentage', 'avg_response_time_hours']
+                
+                all_numeric_valid = True
+                for field in numeric_fields:
+                    if not isinstance(response[field], int) or response[field] < 0:
+                        self.log_test(f"Market Stats {field}", False, error=f"{field} should be non-negative integer, got {response[field]}")
+                        all_numeric_valid = False
+                
+                for field in float_fields:
+                    if not isinstance(response[field], (int, float)) or response[field] < 0:
+                        self.log_test(f"Market Stats {field}", False, error=f"{field} should be non-negative number, got {response[field]}")
+                        all_numeric_valid = False
+                
+                if all_numeric_valid:
+                    self.log_test("Market Stats Data Types", True, "All numeric fields have correct types")
+                
+                # Check if fill rate is a percentage (0-100)
+                if 0 <= response['fill_rate_percentage'] <= 100:
+                    self.log_test("Market Stats Fill Rate Range", True, f"Fill rate: {response['fill_rate_percentage']}%")
+                else:
+                    self.log_test("Market Stats Fill Rate Range", False, error=f"Fill rate should be 0-100%, got {response['fill_rate_percentage']}")
+                
+                # Log the actual stats for verification
+                self.log_test("Market Stats Values", True, f"Stats: {response}")
+                
+                # Check if stats reflect real data (not all zeros)
+                total_data_points = sum([response[field] for field in numeric_fields])
+                if total_data_points > 0:
+                    self.log_test("Market Stats Real Data", True, "Stats show real database data")
+                else:
+                    self.log_test("Market Stats Real Data", False, error="All stats are zero - may be using hardcoded values")
+                    
+            else:
+                self.log_test("Market Stats Structure", False, error=f"Missing fields: {missing_fields}")
+        else:
+            self.log_test("Homepage Market Stats Endpoint", False, error=f"Status: {status}, Response: {response}")
+
+    def test_homepage_response_times(self):
+        """Test response times for homepage endpoints"""
+        print("\n🔍 Testing Homepage Response Times...")
+        
+        import time
+        
+        # Test job-roles endpoint response time
+        start_time = time.time()
+        success, response, status = self.make_request('GET', 'homepage/job-roles', expected_status=200)
+        job_roles_time = time.time() - start_time
+        
+        if success:
+            if job_roles_time < 2.0:  # Should respond within 2 seconds
+                self.log_test("Job Roles Response Time", True, f"Response time: {job_roles_time:.3f}s")
+            else:
+                self.log_test("Job Roles Response Time", False, error=f"Slow response: {job_roles_time:.3f}s")
+        else:
+            self.log_test("Job Roles Response Time", False, error=f"Endpoint failed: {status}")
+        
+        # Test market-stats endpoint response time
+        start_time = time.time()
+        success, response, status = self.make_request('GET', 'homepage/market-stats', expected_status=200)
+        market_stats_time = time.time() - start_time
+        
+        if success:
+            if market_stats_time < 3.0:  # Should respond within 3 seconds (allows for DB queries)
+                self.log_test("Market Stats Response Time", True, f"Response time: {market_stats_time:.3f}s")
+            else:
+                self.log_test("Market Stats Response Time", False, error=f"Slow response: {market_stats_time:.3f}s")
+        else:
+            self.log_test("Market Stats Response Time", False, error=f"Endpoint failed: {status}")
+
     def run_all_tests(self):
         """Run all backend API tests"""
         print("🚀 Starting SetuHub Backend API Tests...")
