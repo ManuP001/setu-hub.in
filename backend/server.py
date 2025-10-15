@@ -252,6 +252,7 @@ async def register(user_data: UserCreate):
         
         user_doc = {
             "id": user_id,
+            "username": user_data.email or user_data.phone,  # Use phone as username for workers
             "email": user_data.email or f"worker_{user_id}@setuhub.com",  # Temp email
             "password": hash_password(user_data.password or "temp123"),  # Temp password
             "user_type": user_data.user_type,
