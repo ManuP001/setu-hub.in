@@ -921,7 +921,12 @@ class SetuHubAPITester:
 def main():
     """Main function to run backend tests"""
     tester = SetuHubAPITester()
-    results = tester.run_all_tests()
+    
+    # Check if we should run only authentication tests
+    if len(sys.argv) > 1 and sys.argv[1] == "auth":
+        results = tester.run_authentication_tests_only()
+    else:
+        results = tester.run_all_tests()
     
     # Return appropriate exit code
     if results["failed_tests"] == 0:
