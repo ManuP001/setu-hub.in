@@ -273,6 +273,7 @@ async def register(user_data: UserCreate):
         
         user_doc = {
             "id": user_id,
+            "username": user_data.email,  # Use email as username
             "email": user_data.email,
             "password": hashed_pwd,
             "user_type": user_data.user_type,
