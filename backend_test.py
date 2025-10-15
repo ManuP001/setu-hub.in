@@ -7,7 +7,7 @@ from datetime import datetime
 import uuid
 
 class SetuHubAPITester:
-    def __init__(self, base_url="https://logistics-talent.preview.emergentagent.com/api"):
+    def __init__(self, base_url="https://work-connect-17.preview.emergentagent.com/api"):
         self.base_url = base_url
         self.session = requests.Session()
         self.tokens = {}  # Store tokens for different user types
