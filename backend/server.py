@@ -490,14 +490,28 @@ async def get_vendor_jobs(current_user: dict = Depends(get_current_user)):
     if current_user["user_type"] != "vendor":
         raise HTTPException(status_code=403, detail="Only vendors can access this")
     
-    vendor = await db.vendors.find_one({"id": current_user["vendor_id"]}, {"_id": 0})
-    if not vendor:
-        raise HTTPException(status_code=404, detail="Vendor not found")
-    
     # Get all open jobs
     jobs = await db.jobs.find({"status": "open"}, {"_id": 0}).to_list(1000)
     
-    # Filter jobs based on vendor's operating areas
+    # Check if vendor profile exists
+    vendor = None
+    if current_user.get("vendor_id"):
+        vendor = await db.vendors.find_one({"id": current_user["vendor_id"]}, {"_id": 0})
+    
+    # If no vendor profile, show all jobs (browsing mode)
+    if not vendor:
+        enriched_jobs = []
+        for job in jobs:
+            gu = await db.gus.find_one({"id": job["gu_id"]}, {"_id": 0})
+            enterprise = await db.enterprises.find_one({"id": job["enterprise_id"]}, {"_id": 0})
+            enriched_jobs.append({
+                **job,
+                "gu_details": gu,
+                "enterprise_details": enterprise
+            })
+        return enriched_jobs
+    
+    # If vendor profile exists, filter jobs based on operating areas and services
     filtered_jobs = []
     for job in jobs:
         gu = await db.gus.find_one({"id": job["gu_id"]}, {"_id": 0})
