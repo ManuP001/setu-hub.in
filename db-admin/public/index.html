@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SetuHub Database Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .json-view { font-family: 'Monaco', 'Courier New', monospace; font-size: 12px; }
+        .table-container { max-height: 600px; overflow: auto; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="min-h-screen">
+        <!-- Header -->
+        <header class="bg-white border-b border-gray-200 sticky top-0 z-10">
+            <div class="max-w-7xl mx-auto px-6 py-4">
+                <h1 class="text-2xl font-bold text-gray-900">SetuHub Database Admin</h1>
+                <p class="text-sm text-gray-600">MongoDB Query Interface</p>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="max-w-7xl mx-auto px-6 py-8">
+            <!-- Collections List -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+                <h2 class="text-lg font-bold mb-4">Collections</h2>
+                <div id="collections" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
+            </div>
+
+            <!-- Query Interface -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+                <h2 class="text-lg font-bold mb-4">Query Builder</h2>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Collection</label>
+                        <select id="selectedCollection" class="w-full p-2 border border-gray-300 rounded-lg">
+                            <option value="">Select a collection...</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Query (MongoDB JSON)</label>
+                        <textarea id="queryInput" class="w-full p-3 border border-gray-300 rounded-lg font-mono text-sm" rows="4" placeholder='{ "status": "open" } or {} for all documents'></textarea>
+                        <p class="text-xs text-gray-500 mt-1">Example: {"user_type": "vendor"} or {"status": {"$in": ["open", "committed"]}}</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Limit</label>
+                            <input type="number" id="limitInput" value="50" class="w-full p-2 border border-gray-300 rounded-lg">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Sort (JSON)</label>
+                            <input type="text" id="sortInput" placeholder='{"created_at": -1}' class="w-full p-2 border border-gray-300 rounded-lg font-mono text-sm">
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3">
+                        <button onclick="executeQuery()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 font-semibold">
+                            Execute Query
+                        </button>
+                        <button onclick="exportCollection()" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 font-semibold">
+                            Export Collection
+                        </button>
+                        <button onclick="clearQuery()" class="bg-gray-300 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-400 font-semibold">
+                            Clear
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-bold">Results</h2>
+                    <span id="resultCount" class="text-sm text-gray-600"></span>
+                </div>
+                
+                <div class="mb-4 flex gap-2">
+                    <button onclick="viewMode = 'table'; renderResults()" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 text-sm font-semibold">Table View</button>
+                    <button onclick="viewMode = 'json'; renderResults()" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 text-sm font-semibold">JSON View</button>
+                </div>
+
+                <div id="results" class="table-container">
+                    <p class="text-gray-500 text-center py-8">Execute a query to see results</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let collections = [];
+        let currentResults = [];
+        let viewMode = 'table';
+
+        // Load collections on page load
+        async function loadCollections() {
+            try {
+                const response = await fetch('/api/collections');
+                collections = await response.json();
+                
+                const collectionsDiv = document.getElementById('collections');
+                const select = document.getElementById('selectedCollection');
+                
+                collectionsDiv.innerHTML = collections.map(name => `
+                    <button onclick="selectCollection('${name}')" 
+                            class="p-3 bg-blue-50 hover:bg-blue-100 rounded-lg text-left border border-blue-200">
+                        <div class="font-semibold text-blue-900">${name}</div>
+                        <div id="count-${name}" class="text-xs text-blue-600">Loading...</div>
+                    </button>
+                `).join('');
+                
+                select.innerHTML = '<option value="">Select a collection...</option>' + 
+                    collections.map(name => `<option value="${name}">${name}</option>`).join('');
+                
+                // Load counts for each collection
+                collections.forEach(async name => {
+                    const statsResponse = await fetch(`/api/collections/${name}/stats`);
+                    const stats = await statsResponse.json();
+                    document.getElementById(`count-${name}`).textContent = `${stats.count} documents`;
+                });
+            } catch (error) {
+                console.error('Error loading collections:', error);
+            }
+        }
+
+        function selectCollection(name) {
+            document.getElementById('selectedCollection').value = name;
+        }
+
+        async function executeQuery() {
+            const collection = document.getElementById('selectedCollection').value;
+            if (!collection) {
+                alert('Please select a collection');
+                return;
+            }
+
+            const query = document.getElementById('queryInput').value.trim() || '{}';
+            const limit = parseInt(document.getElementById('limitInput').value) || 50;
+            const sort = document.getElementById('sortInput').value.trim();
+
+            try {
+                const response = await fetch('/api/query', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ collection, query, limit, sort })
+                });
+
+                const data = await response.json();
+                if (data.error) {
+                    alert('Error: ' + data.error);
+                    return;
+                }
+
+                currentResults = data.results;
+                document.getElementById('resultCount').textContent = 
+                    `Showing ${data.count} of ${data.total} documents`;
+                renderResults();
+            } catch (error) {
+                alert('Error executing query: ' + error.message);
+            }
+        }
+
+        function renderResults() {
+            const resultsDiv = document.getElementById('results');
+            
+            if (currentResults.length === 0) {
+                resultsDiv.innerHTML = '<p class="text-gray-500 text-center py-8">No results found</p>';
+                return;
+            }
+
+            if (viewMode === 'json') {
+                resultsDiv.innerHTML = `<pre class="json-view bg-gray-50 p-4 rounded overflow-auto">${JSON.stringify(currentResults, null, 2)}</pre>`;
+            } else {
+                // Table view
+                const keys = Object.keys(currentResults[0]);
+                const tableHTML = `
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50 sticky top-0">
+                                <tr>
+                                    ${keys.map(key => `<th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">${key}</th>`).join('')}
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                ${currentResults.map(row => `
+                                    <tr class="hover:bg-gray-50">
+                                        ${keys.map(key => {
+                                            const value = row[key];
+                                            const displayValue = typeof value === 'object' ? JSON.stringify(value) : value;
+                                            return `<td class="px-4 py-3 text-sm text-gray-900">${displayValue || ''}</td>`;
+                                        }).join('')}
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+                resultsDiv.innerHTML = tableHTML;
+            }
+        }
+
+        async function exportCollection() {
+            const collection = document.getElementById('selectedCollection').value;
+            if (!collection) {
+                alert('Please select a collection');
+                return;
+            }
+
+            window.open(`/api/export/${collection}`, '_blank');
+        }
+
+        function clearQuery() {
+            document.getElementById('queryInput').value = '';
+            document.getElementById('sortInput').value = '';
+            document.getElementById('limitInput').value = '50';
+        }
+
+        // Load collections on page load
+        loadCollections();
+    </script>
+</body>
+</html>
