@@ -201,42 +201,72 @@ const LandingPage = () => {
       <section className="py-24 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
-            <h3 className="text-4xl font-black mb-4">Real-Time Market Overview</h3>
-            <p className="text-xl text-gray-600">Live dashboard showing state-wise, district-wise, and city-wise job openings</p>
+            <h3 className="text-4xl font-black mb-4">Real-Time Job Openings</h3>
+            <p className="text-xl text-gray-600">Latest job postings from top enterprises across India</p>
           </div>
-          {loading || !marketStats ? (
-            <div className="text-center text-gray-500">Loading market data...</div>
+          {loading ? (
+            <div className="text-center text-gray-500">Loading jobs...</div>
+          ) : recentJobs.length === 0 ? (
+            <div className="text-center text-gray-500">No active jobs at the moment</div>
           ) : (
-            <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-              <Card className="p-8 text-center hover-lift border-2 border-green-200 bg-white" data-testid="market-stat-jobs">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Briefcase className="w-8 h-8 text-green-600" />
-                </div>
-                <div className="text-4xl font-black text-green-600 mb-2">{marketStats.active_jobs}</div>
-                <div className="text-sm font-semibold text-gray-600 uppercase">Active Jobs</div>
-                <div className="text-xs text-green-600 mt-2 flex items-center justify-center gap-1">
-                  <Activity className="w-3 h-3" />
-                  <span>+12% this week</span>
-                </div>
-              </Card>
-              
-              <Card className="p-8 text-center hover-lift border-2 border-blue-200 bg-white" data-testid="market-stat-locations">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <MapPin className="w-8 h-8 text-blue-600" />
-                </div>
-                <div className="text-4xl font-black text-blue-600 mb-2">{marketStats.total_locations}</div>
-                <div className="text-sm font-semibold text-gray-600 uppercase">Locations</div>
-                <div className="text-xs text-blue-600 mt-2">Cities covered</div>
-              </Card>
-              
-              <Card className="p-8 text-center hover-lift border-2 border-purple-200 bg-white" data-testid="market-stat-vendors">
-                <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Users className="w-8 h-8 text-purple-600" />
-                </div>
-                <div className="text-4xl font-black text-purple-600 mb-2">{marketStats.total_vendors}</div>
-                <div className="text-sm font-semibold text-gray-600 uppercase">Vendors</div>
-                <div className="text-xs text-purple-600 mt-2">Verified partners</div>
-              </Card>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {recentJobs.slice(0, 6).map((job, idx) => (
+                <Card key={idx} className="p-6 hover-lift border-2 border-gray-100 bg-white hover:border-blue-300 transition-all" data-testid={`job-posting-${idx}`}>
+                  <div className="space-y-4">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <h4 className="text-lg font-bold text-gray-900 capitalize">{job.role}</h4>
+                        <p className="text-sm text-gray-600">{job.enterprise_name}</p>
+                      </div>
+                      <Badge variant="secondary" className="bg-green-100 text-green-800 font-semibold">
+                        {job.quantity_required} positions
+                      </Badge>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <MapPin className="w-4 h-4" />
+                        <span>{job.location}</span>
+                      </div>
+                      {job.salary && (
+                        <div className="flex items-center gap-2 text-sm text-green-600 font-semibold">
+                          <span>₹{parseInt(job.salary).toLocaleString()}/month</span>
+                        </div>
+                      )}
+                      {job.shift_time && (
+                        <div className="text-sm text-gray-600">
+                          <span className="capitalize">{job.shift_time.replace('_', ' ')} shift</span>
+                        </div>
+                      )}
+                      {job.experience_required && (
+                        <div className="text-sm text-gray-600">
+                          Experience: {job.experience_required}
+                        </div>
+                      )}
+                    </div>
+                    
+                    <Button 
+                      size="sm" 
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                      onClick={() => navigate('/register')}
+                    >
+                      Apply Now
+                    </Button>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          )}
+          
+          {recentJobs.length > 6 && (
+            <div className="text-center mt-12">
+              <Button 
+                size="lg" 
+                onClick={() => navigate('/register')} 
+                className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-8"
+              >
+                View All Jobs <ArrowRight className="ml-2 w-5 h-5" />
+              </Button>
             </div>
           )}
         </div>
