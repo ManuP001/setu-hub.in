@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { API } from '@/App';
@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { Building2, Users, Briefcase, Loader2 } from 'lucide-react';
 
@@ -14,23 +15,113 @@ const Register = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [userType, setUserType] = useState('enterprise');
-  const [formData, setFormData] = useState({
-    username: '',
+  const [enterpriseList, setEnterpriseList] = useState([]);
+  
+  // Enterprise form
+  const [enterpriseForm, setEnterpriseForm] = useState({
+    enterprise_name: '',
     email: '',
+    phone: '',
     password: '',
+    full_name: ''
+  });
+
+  // Vendor form
+  const [vendorForm, setVendorForm] = useState({
+    vendor_name: '',
+    email: '',
+    phone: '',
+    password: '',
+    full_name: ''
+  });
+
+  // Worker form
+  const [workerForm, setWorkerForm] = useState({
     full_name: '',
     phone: ''
   });
 
+  useEffect(() => {
+    fetchEnterpriseList();
+  }, []);
+
+  const fetchEnterpriseList = async () => {
+    try {
+      const response = await axios.get(`${API}/enterprise-list`);
+      setEnterpriseList(response.data.enterprises);
+    } catch (error) {
+      console.error('Failed to fetch enterprise list:', error);
+    }
+  };
+
+  const userTypes = [
+    { value: 'enterprise', label: 'Enterprise', icon: <Building2 className="w-4 h-4" />, desc: 'For businesses hiring workers' },
+    { value: 'vendor', label: 'Vendor', icon: <Users className="w-4 h-4" />, desc: 'For manpower suppliers' },
+    { value: 'worker', label: 'Worker', icon: <Briefcase className="w-4 h-4" />, desc: 'For job seekers' }
+  ];
+
+  const validatePhone = (phone, isWorker = false) => {
+    if (isWorker) {
+      // Worker: Must be exactly 10 digits
+      const digitsOnly = phone.replace(/\D/g, '');
+      return digitsOnly.length === 10;
+    }
+    return phone.length > 0;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    let requestData = {
+      user_type: userType === 'worker' ? 'job_seeker' : userType
+    };
+
+    if (userType === 'enterprise') {
+      if (!enterpriseForm.enterprise_name || !enterpriseForm.email || !enterpriseForm.phone || !enterpriseForm.password) {
+        toast.error('Please fill all required fields');
+        return;
+      }
+      requestData = {
+        ...requestData,
+        enterprise_name: enterpriseForm.enterprise_name,
+        email: enterpriseForm.email,
+        phone: enterpriseForm.phone,
+        password: enterpriseForm.password,
+        full_name: enterpriseForm.full_name || enterpriseForm.enterprise_name
+      };
+    } else if (userType === 'vendor') {
+      if (!vendorForm.vendor_name || !vendorForm.email || !vendorForm.phone || !vendorForm.password) {
+        toast.error('Please fill all required fields');
+        return;
+      }
+      requestData = {
+        ...requestData,
+        vendor_name: vendorForm.vendor_name,
+        email: vendorForm.email,
+        phone: vendorForm.phone,
+        password: vendorForm.password,
+        full_name: vendorForm.full_name || vendorForm.vendor_name
+      };
+    } else if (userType === 'worker') {
+      if (!workerForm.full_name || !workerForm.phone) {
+        toast.error('Please fill all required fields');
+        return;
+      }
+      if (!validatePhone(workerForm.phone, true)) {
+        toast.error('Phone number must be exactly 10 digits');
+        return;
+      }
+      requestData = {
+        ...requestData,
+        full_name: workerForm.full_name,
+        phone: '+91' + workerForm.phone.replace(/\D/g, '')
+      };
+    }
+
     setLoading(true);
 
     try {
-      const response = await axios.post(`${API}/auth/register`, {
-        ...formData,
-        user_type: userType === 'worker' ? 'job_seeker' : userType
-      });
+      const response = await axios.post(`${API}/auth/register`, requestData);
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
       
@@ -50,12 +141,6 @@ const Register = () => {
       setLoading(false);
     }
   };
-
-  const userTypes = [
-    { value: 'enterprise', label: 'Enterprise', icon: <Building2 className="w-4 h-4" />, desc: 'For businesses hiring workers' },
-    { value: 'vendor', label: 'Vendor', icon: <Users className="w-4 h-4" />, desc: 'For manpower suppliers' },
-    { value: 'worker', label: 'Worker', icon: <Briefcase className="w-4 h-4" />, desc: 'For job seekers' }
-  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-white to-orange-50 flex items-center justify-center p-6">
@@ -103,78 +188,178 @@ const Register = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="full_name" className="font-semibold">Full Name</Label>
-                <Input
-                  id="full_name"
-                  type="text"
-                  placeholder="John Doe"
-                  value={formData.full_name}
-                  onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-                  required
-                  className="h-11 border-2"
-                  data-testid="register-fullname-input"
-                />
-              </div>
+            {/* ENTERPRISE FORM */}
+            {userType === 'enterprise' && (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="enterprise_name" className="font-semibold">Enterprise Name *</Label>
+                  <Select 
+                    value={enterpriseForm.enterprise_name} 
+                    onValueChange={(value) => setEnterpriseForm({ ...enterpriseForm, enterprise_name: value })}
+                    required
+                  >
+                    <SelectTrigger data-testid="enterprise-name-select">
+                      <SelectValue placeholder="Select your enterprise" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {enterpriseList.map((ent) => (
+                        <SelectItem key={ent} value={ent}>{ent}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="username" className="font-semibold">Username</Label>
-                <Input
-                  id="username"
-                  type="text"
-                  placeholder="johndoe"
-                  value={formData.username}
-                  onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                  required
-                  className="h-11 border-2"
-                  data-testid="register-username-input"
-                />
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="email" className="font-semibold">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="you@company.com"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  required
-                  className="h-11 border-2"
-                  data-testid="register-email-input"
-                />
-              </div>
+                <div className="space-y-2">
+                  <Label htmlFor="ent_email" className="font-semibold">Email *</Label>
+                  <Input
+                    id="ent_email"
+                    type="email"
+                    placeholder="you@company.com"
+                    value={enterpriseForm.email}
+                    onChange={(e) => setEnterpriseForm({ ...enterpriseForm, email: e.target.value })}
+                    required
+                    className="h-11 border-2"
+                    data-testid="enterprise-email-input"
+                  />
+                </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="phone" className="font-semibold">Phone Number</Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  placeholder="+91 9876543210"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="h-11 border-2"
-                  data-testid="register-phone-input"
-                />
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="password" className="font-semibold">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                required
-                className="h-11 border-2"
-                data-testid="register-password-input"
-              />
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="ent_phone" className="font-semibold">Phone Number *</Label>
+                  <Input
+                    id="ent_phone"
+                    type="tel"
+                    placeholder="+91 9876543210"
+                    value={enterpriseForm.phone}
+                    onChange={(e) => setEnterpriseForm({ ...enterpriseForm, phone: e.target.value })}
+                    required
+                    className="h-11 border-2"
+                    data-testid="enterprise-phone-input"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="ent_password" className="font-semibold">Password *</Label>
+                  <Input
+                    id="ent_password"
+                    type="password"
+                    placeholder="••••••••"
+                    value={enterpriseForm.password}
+                    onChange={(e) => setEnterpriseForm({ ...enterpriseForm, password: e.target.value })}
+                    required
+                    className="h-11 border-2"
+                    data-testid="enterprise-password-input"
+                  />
+                </div>
+              </>
+            )}
+
+            {/* VENDOR FORM */}
+            {userType === 'vendor' && (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="vendor_name" className="font-semibold">Vendor Name *</Label>
+                  <Input
+                    id="vendor_name"
+                    type="text"
+                    placeholder="ABC Manpower Solutions"
+                    value={vendorForm.vendor_name}
+                    onChange={(e) => setVendorForm({ ...vendorForm, vendor_name: e.target.value })}
+                    required
+                    className="h-11 border-2"
+                    data-testid="vendor-name-input"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="ven_email" className="font-semibold">Email *</Label>
+                  <Input
+                    id="ven_email"
+                    type="email"
+                    placeholder="you@vendorcompany.com"
+                    value={vendorForm.email}
+                    onChange={(e) => setVendorForm({ ...vendorForm, email: e.target.value })}
+                    required
+                    className="h-11 border-2"
+                    data-testid="vendor-email-input"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="ven_phone" className="font-semibold">Phone Number *</Label>
+                  <Input
+                    id="ven_phone"
+                    type="tel"
+                    placeholder="+91 9876543210"
+                    value={vendorForm.phone}
+                    onChange={(e) => setVendorForm({ ...vendorForm, phone: e.target.value })}
+                    required
+                    className="h-11 border-2"
+                    data-testid="vendor-phone-input"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="ven_password" className="font-semibold">Password *</Label>
+                  <Input
+                    id="ven_password"
+                    type="password"
+                    placeholder="••••••••"
+                    value={vendorForm.password}
+                    onChange={(e) => setVendorForm({ ...vendorForm, password: e.target.value })}
+                    required
+                    className="h-11 border-2"
+                    data-testid="vendor-password-input"
+                  />
+                </div>
+              </>
+            )}
+
+            {/* WORKER FORM */}
+            {userType === 'worker' && (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="worker_name" className="font-semibold">Full Name *</Label>
+                  <Input
+                    id="worker_name"
+                    type="text"
+                    placeholder="Rahul Kumar"
+                    value={workerForm.full_name}
+                    onChange={(e) => setWorkerForm({ ...workerForm, full_name: e.target.value })}
+                    required
+                    className="h-11 border-2"
+                    data-testid="worker-name-input"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="worker_phone" className="font-semibold">Phone Number *</Label>
+                  <div className="flex gap-2">
+                    <div className="w-20">
+                      <Input
+                        value="+91"
+                        disabled
+                        className="h-11 border-2 bg-gray-100 text-center font-semibold"
+                      />
+                    </div>
+                    <Input
+                      id="worker_phone"
+                      type="tel"
+                      placeholder="9876543210"
+                      maxLength="10"
+                      value={workerForm.phone}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\D/g, '');
+                        setWorkerForm({ ...workerForm, phone: value });
+                      }}
+                      required
+                      className="h-11 border-2 flex-1"
+                      data-testid="worker-phone-input"
+                    />
+                  </div>
+                  <p className="text-xs text-gray-600">Enter 10-digit mobile number</p>
+                </div>
+              </>
+            )}
 
             <Button 
               type="submit" 
