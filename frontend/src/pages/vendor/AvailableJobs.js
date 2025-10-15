@@ -55,6 +55,13 @@ const AvailableJobs = ({ vendor }) => {
   };
 
   const handleCommit = async () => {
+    if (!vendor?.id) {
+      toast.error('Please complete your vendor profile before committing to jobs');
+      setCommitmentDialog(false);
+      setDialogOpen(false);
+      return;
+    }
+    
     if (!pocData.poc_name || !pocData.poc_contact) {
       toast.error('Please provide POC details');
       return;
