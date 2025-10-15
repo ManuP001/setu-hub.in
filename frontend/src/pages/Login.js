@@ -44,12 +44,6 @@ const Login = () => {
     }
   };
 
-  const userTypes = [
-    { value: 'enterprise', label: 'Enterprise', icon: <Building2 className="w-4 h-4" />, desc: 'For businesses' },
-    { value: 'vendor', label: 'Vendor', icon: <Users className="w-4 h-4" />, desc: 'For suppliers' },
-    { value: 'worker', label: 'Worker', icon: <Briefcase className="w-4 h-4" />, desc: 'For job seekers' }
-  ];
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-white to-orange-50 flex items-center justify-center p-6">
       <Button 
