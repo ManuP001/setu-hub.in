@@ -1,12 +1,17 @@
 import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Users, Building2, Briefcase, Clock, Shield, TrendingUp, Star, ArrowRight, CheckCircle2, Zap, Award, BarChart3 } from 'lucide-react';
+import { Users, Building2, Briefcase, Clock, Shield, TrendingUp, Star, ArrowRight, CheckCircle2, Zap, Award, BarChart3, MapPin, Percent, Activity } from 'lucide-react';
 
 const LandingPage = () => {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('user') || 'null');
+  const [jobRoles, setJobRoles] = useState([]);
+  const [marketStats, setMarketStats] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
   const handleGetStarted = () => {
     if (user) {
