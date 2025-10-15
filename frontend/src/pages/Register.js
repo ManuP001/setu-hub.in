@@ -225,16 +225,29 @@ const Register = () => {
 
                 <div className="space-y-2">
                   <Label htmlFor="ent_phone" className="font-semibold">Phone Number *</Label>
-                  <Input
-                    id="ent_phone"
-                    type="tel"
-                    placeholder="+91 9876543210"
-                    value={enterpriseForm.phone}
-                    onChange={(e) => setEnterpriseForm({ ...enterpriseForm, phone: e.target.value })}
-                    required
-                    className="h-11 border-2"
-                    data-testid="enterprise-phone-input"
-                  />
+                  <div className="flex gap-2">
+                    <div className="w-20">
+                      <Input
+                        value="+91"
+                        disabled
+                        className="h-11 border-2 bg-gray-100 text-center font-semibold"
+                      />
+                    </div>
+                    <Input
+                      id="ent_phone"
+                      type="tel"
+                      placeholder="9876543210"
+                      maxLength="10"
+                      value={enterpriseForm.phone}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\D/g, '');
+                        setEnterpriseForm({ ...enterpriseForm, phone: value });
+                      }}
+                      required
+                      className="h-11 border-2"
+                      data-testid="enterprise-phone-input"
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-2">
