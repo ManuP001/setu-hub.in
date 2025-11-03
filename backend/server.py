@@ -126,7 +126,7 @@ class Job(BaseModel):
 
 class VendorCreate(BaseModel):
     name: str
-    gst_no: str
+    gst_no: Optional[str] = None  # Made optional for vendors with turnover < 40 Lacs
     email: EmailStr
     phone: str
     operating_states: List[str]
@@ -138,7 +138,7 @@ class Vendor(BaseModel):
     model_config = ConfigDict(extra="ignore")
     id: str
     name: str
-    gst_no: str
+    gst_no: Optional[str] = None
     email: str
     phone: str
     operating_states: List[str]
