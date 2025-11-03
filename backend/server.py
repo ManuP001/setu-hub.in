@@ -100,9 +100,9 @@ class GU(BaseModel):
 class JobCreate(BaseModel):
     enterprise_id: str
     gu_id: str
-    role: str  # "picker", "loader", "biller", "rider", "sorter"
+    role: str  # Standardized 8 core roles from homepage
     quantity_required: int
-    shift_time: Optional[str] = None
+    nature_of_job: Optional[str] = None  # "full_time", "part_time", "contract"
     description: Optional[str] = None
     salary: Optional[str] = None
     experience_required: Optional[str] = None
@@ -114,7 +114,7 @@ class Job(BaseModel):
     gu_id: str
     role: str
     quantity_required: int
-    shift_time: Optional[str] = None
+    nature_of_job: Optional[str] = None  # Replaces shift_time
     description: Optional[str] = None
     salary: Optional[str] = None
     experience_required: Optional[str] = None
