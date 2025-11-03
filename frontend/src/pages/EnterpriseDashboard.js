@@ -51,6 +51,7 @@ const EnterpriseDashboard = () => {
     { path: '/', icon: <Building2 className="w-5 h-5" />, label: 'Home', external: true },
     { path: '/enterprise', icon: <LayoutDashboard className="w-5 h-5" />, label: 'Dashboard' },
     { path: '/enterprise/jobs', icon: <Briefcase className="w-5 h-5" />, label: 'Jobs' },
+    { path: '/enterprise/applications', icon: <Users className="w-5 h-5" />, label: 'Applications' },
     { path: '/enterprise/gus', icon: <MapPin className="w-5 h-5" />, label: 'Facilities' },
     { path: '/enterprise/bulk-upload', icon: <Plus className="w-5 h-5" />, label: 'Bulk Upload' },
     { path: '/enterprise/profile', icon: <Building2 className="w-5 h-5" />, label: 'Profile' },
