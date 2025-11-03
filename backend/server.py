@@ -166,10 +166,8 @@ class Commitment(BaseModel):
 class ApplicationCreate(BaseModel):
     job_id: str
     applicant_name: str
-    applicant_email: str
     applicant_phone: str
     experience: Optional[str] = None
-    cover_note: Optional[str] = None
 
 class Application(BaseModel):
     model_config = ConfigDict(extra="ignore")
@@ -177,10 +175,8 @@ class Application(BaseModel):
     job_id: str
     user_id: str
     applicant_name: str
-    applicant_email: str
     applicant_phone: str
     experience: Optional[str] = None
-    cover_note: Optional[str] = None
     status: str  # "applied", "reviewed", "shortlisted", "rejected"
     applied_at: str
 
