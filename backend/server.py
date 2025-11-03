@@ -66,18 +66,12 @@ class User(BaseModel):
 class EnterpriseCreate(BaseModel):
     name: str
     enterprise_type: str  # "qcom", "ecomm", "3pl"
-    tier: int  # 1, 2, or 3
-    gst_no: Optional[str] = None
-    description: Optional[str] = None
 
 class Enterprise(BaseModel):
     model_config = ConfigDict(extra="ignore")
     id: str
     name: str
     enterprise_type: str
-    tier: int
-    gst_no: Optional[str] = None
-    description: Optional[str] = None
     created_at: str
 
 class GUCreate(BaseModel):
