@@ -642,6 +642,36 @@ async def create_application(application: ApplicationCreate, current_user: dict 
     await db.applications.insert_one(application_doc)
     return Application(**application_doc)
 
+@api_router.get("/applications/job/{job_id}")
+async def get_applications_by_job(job_id: str, current_user: dict = Depends(get_current_user)):
+    """Get all applications for a specific job (for enterprises)"""
+    applications = await db.applications.find({"job_id": job_id}, {"_id": 0}).to_list(1000)
+    return applications
+
+@api_router.put("/applications/{application_id}/status")
+async def update_application_status(
+    application_id: str,
+    status: str,
+    current_user: dict = Depends(get_current_user)
+):
+    """Update application status (for enterprises)"""
+    if current_user["user_type"] != "enterprise":
+        raise HTTPException(status_code=403, detail="Only enterprises can update application status")
+    
+    valid_statuses = ["applied", "reviewed", "shortlisted", "rejected"]
+    if status not in valid_statuses:
+        raise HTTPException(status_code=400, detail=f"Invalid status. Must be one of: {valid_statuses}")
+    
+    result = await db.applications.update_one(
+        {"id": application_id},
+        {"$set": {"status": status}}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Application not found")
+    
+    return {"message": "Application status updated successfully"}
+
 @api_router.get("/applications")
 async def get_applications(
     job_id: Optional[str] = None,
