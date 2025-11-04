@@ -14,7 +14,7 @@ const Login = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    email: '',
+    identifier: '', // Can be email or phone
     password: ''
   });
 
@@ -23,7 +23,13 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post(`${API}/auth/login`, formData);
+      // Determine if identifier is email or phone
+      const isPhone = /^\d{10}$/.test(formData.identifier);
+      const loginData = isPhone 
+        ? { phone: formData.identifier, password: formData.password }
+        : { email: formData.identifier, password: formData.password };
+
+      const response = await axios.post(`${API}/auth/login`, loginData);
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
       
