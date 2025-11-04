@@ -14,20 +14,14 @@ const EnterpriseProfile = ({ user, enterprise, setEnterprise }) => {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
-    enterprise_type: '',
-    tier: 1,
-    gst_no: '',
-    description: ''
+    enterprise_type: ''
   });
 
   useEffect(() => {
     if (enterprise) {
       setFormData({
         name: enterprise.name || '',
-        enterprise_type: enterprise.enterprise_type || '',
-        tier: enterprise.tier || 1,
-        gst_no: enterprise.gst_no || '',
-        description: enterprise.description || ''
+        enterprise_type: enterprise.enterprise_type || ''
       });
     }
   }, [enterprise]);
