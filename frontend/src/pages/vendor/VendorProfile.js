@@ -22,9 +22,9 @@ const VendorProfile = ({ user, vendor, setVendor }) => {
     operating_pin_codes: [], // Kept for backward compatibility but not shown in UI
     services_offered: []
   });
-  const [newState, setNewState] = useState('');
-  const [newCity, setNewCity] = useState('');
-  const [newService, setNewService] = useState('');
+  const [showStatesDropdown, setShowStatesDropdown] = useState(false);
+  const [showCitiesDropdown, setShowCitiesDropdown] = useState(false);
+  const [availableCities, setAvailableCities] = useState([]);
 
   useEffect(() => {
     if (vendor) {
