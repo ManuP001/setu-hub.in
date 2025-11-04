@@ -47,6 +47,40 @@ const VendorProfile = ({ user, vendor, setVendor }) => {
     }
   }, [vendor, user]);
 
+  // Update available cities when states change
+  useEffect(() => {
+    const cities = getCitiesForStates(formData.operating_states);
+    setAvailableCities(cities);
+    
+    // Remove cities that are no longer valid
+    const validCities = formData.operating_cities.filter(city => cities.includes(city));
+    if (validCities.length !== formData.operating_cities.length) {
+      setFormData(prev => ({ ...prev, operating_cities: validCities }));
+    }
+  }, [formData.operating_states]);
+
+  const toggleState = (state) => {
+    if (vendor) return; // Don't allow changes if vendor exists
+    
+    setFormData(prev => {
+      const states = prev.operating_states.includes(state)
+        ? prev.operating_states.filter(s => s !== state)
+        : [...prev.operating_states, state];
+      return { ...prev, operating_states: states };
+    });
+  };
+
+  const toggleCity = (city) => {
+    if (vendor) return; // Don't allow changes if vendor exists
+    
+    setFormData(prev => {
+      const cities = prev.operating_cities.includes(city)
+        ? prev.operating_cities.filter(c => c !== city)
+        : [...prev.operating_cities, city];
+      return { ...prev, operating_cities: cities };
+    });
+  };
+
   const addItem = (field, value, setter) => {
     if (value.trim() && !formData[field].includes(value.trim())) {
       setFormData({ ...formData, [field]: [...formData[field], value.trim()] });
