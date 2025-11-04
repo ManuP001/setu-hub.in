@@ -88,49 +88,9 @@ const EnterpriseProfile = ({ user, enterprise, setEnterprise }) => {
                     <SelectItem value="qcom">Quick Commerce</SelectItem>
                     <SelectItem value="ecomm">E-commerce</SelectItem>
                     <SelectItem value="3pl">3PL Logistics</SelectItem>
+                    <SelectItem value="food_delivery">Food Delivery</SelectItem>
                   </SelectContent>
                 </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="tier">Enterprise Tier *</Label>
-                <Select 
-                  value={String(formData.tier)} 
-                  onValueChange={(value) => setFormData({ ...formData, tier: parseInt(value) })}
-                  required
-                >
-                  <SelectTrigger data-testid="enterprise-tier-select">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="1">Tier 1 - Large Centralized (Multi-city operations)</SelectItem>
-                    <SelectItem value="2">Tier 2 - Mid-Market (Regional operations)</SelectItem>
-                    <SelectItem value="3">Tier 3 - Small Operator (Single location)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="gst_no">GST Number</Label>
-                <Input
-                  id="gst_no"
-                  placeholder="22AAAAA0000A1Z5"
-                  value={formData.gst_no}
-                  onChange={(e) => setFormData({ ...formData, gst_no: e.target.value })}
-                  data-testid="enterprise-gst-input"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
-                <Textarea
-                  id="description"
-                  placeholder="Brief description of your enterprise..."
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  rows={4}
-                  data-testid="enterprise-description-input"
-                />
               </div>
 
               <Button type="submit" disabled={loading || !!enterprise} className="w-full" data-testid="save-enterprise-btn">
