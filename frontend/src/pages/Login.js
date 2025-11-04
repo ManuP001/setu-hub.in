@@ -74,17 +74,18 @@ const Login = () => {
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="email" className="font-semibold">Email Address</Label>
+              <Label htmlFor="identifier" className="font-semibold">Email or Phone Number</Label>
               <Input
-                id="email"
-                type="email"
-                placeholder="you@company.com"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                id="identifier"
+                type="text"
+                placeholder="you@company.com or 9876543210"
+                value={formData.identifier}
+                onChange={(e) => setFormData({ ...formData, identifier: e.target.value })}
                 required
                 className="h-12 border-2"
                 data-testid="login-email-input"
               />
+              <p className="text-xs text-slate-500">Workers: Use your 10-digit mobile number</p>
             </div>
             
             <div className="space-y-2">
