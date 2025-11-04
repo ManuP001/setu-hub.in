@@ -19,7 +19,7 @@ const CreateJob = ({ enterprise }) => {
     gu_id: '',
     role: '',
     quantity_required: 1,
-    shift_time: '',
+    nature_of_job: '',
     description: ''
   });
 
