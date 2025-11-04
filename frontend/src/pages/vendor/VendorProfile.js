@@ -250,8 +250,8 @@ const VendorProfile = ({ user, vendor, setVendor }) => {
                 )}
                 <div className="flex flex-wrap gap-2">
                   {formData.services_offered.map((service, idx) => (
-                    <span key={idx} className="px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-sm capitalize flex items-center gap-2">
-                      {service.replace('_', ' ')}
+                    <span key={idx} className="px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-sm flex items-center gap-2">
+                      {service}
                       {!vendor && (
                         <button type="button" onClick={() => removeItem('services_offered', idx)}>
                           <X className="w-3 h-3" />
