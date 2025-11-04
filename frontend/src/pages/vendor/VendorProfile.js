@@ -5,8 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
-import { Loader2, Plus, X } from 'lucide-react';
+import { Loader2, Plus, X, ChevronDown, ChevronUp } from 'lucide-react';
+import { INDIAN_STATES, getCitiesForStates } from '@/data/indiaStatesAndCities';
 
 const VendorProfile = ({ user, vendor, setVendor }) => {
   const [loading, setLoading] = useState(false);
