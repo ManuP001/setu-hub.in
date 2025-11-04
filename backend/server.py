@@ -286,7 +286,18 @@ async def register(user_data: UserCreate):
 
 @api_router.post("/auth/login")
 async def login(credentials: UserLogin):
-    user = await db.users.find_one({"email": credentials.email}, {"_id": 0})
+    # Support login with either email or phone
+    if not credentials.email and not credentials.phone:
+        raise HTTPException(status_code=400, detail="Email or phone number required")
+    
+    # Try to find user by email or phone
+    query = {}
+    if credentials.email:
+        query["email"] = credentials.email
+    elif credentials.phone:
+        query["phone"] = credentials.phone
+    
+    user = await db.users.find_one(query, {"_id": 0})
     if not user or not verify_password(credentials.password, user["password"]):
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
