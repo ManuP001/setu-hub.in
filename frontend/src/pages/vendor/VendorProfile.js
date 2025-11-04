@@ -17,12 +17,11 @@ const VendorProfile = ({ user, vendor, setVendor }) => {
     phone: '',
     operating_states: [],
     operating_cities: [],
-    operating_pin_codes: [],
+    operating_pin_codes: [], // Kept for backward compatibility but not shown in UI
     services_offered: []
   });
   const [newState, setNewState] = useState('');
   const [newCity, setNewCity] = useState('');
-  const [newPinCode, setNewPinCode] = useState('');
   const [newService, setNewService] = useState('');
 
   useEffect(() => {
