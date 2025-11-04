@@ -241,10 +241,9 @@ const VendorProfile = ({ user, vendor, setVendor }) => {
                             addItem('services_offered', service, () => {});
                           }
                         }}
-                        className="capitalize"
-                        data-testid={`service-${service}`}
+                        data-testid={`service-${service.replace(/\s+/g, '-').toLowerCase()}`}
                       >
-                        {service.replace('_', ' ')}
+                        {service}
                       </Button>
                     ))}
                   </div>
