@@ -257,19 +257,56 @@ const VendorProfile = ({ user, vendor, setVendor }) => {
               {/* Operating Cities */}
               <div className="space-y-2">
                 <Label>Operating Cities *</Label>
-                <div className="flex gap-2">
-                  <Input
-                    placeholder="Add city"
-                    value={newCity}
-                    onChange={(e) => setNewCity(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addItem('operating_cities', newCity, setNewCity))}
-                    disabled={!!vendor}
-                    data-testid="city-input"
-                  />
-                  <Button type="button" onClick={() => addItem('operating_cities', newCity, setNewCity)} disabled={!!vendor} data-testid="add-city-btn">
-                    <Plus className="w-4 h-4" />
-                  </Button>
-                </div>
+                {!vendor && (
+                  <>
+                    {formData.operating_states.length === 0 ? (
+                      <p className="text-sm text-slate-500 p-3 bg-yellow-50 border border-yellow-200 rounded">
+                        Please select operating states first to see available cities
+                      </p>
+                    ) : (
+                      <div className="relative">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="w-full justify-between h-auto min-h-[40px]"
+                          onClick={() => setShowCitiesDropdown(!showCitiesDropdown)}
+                          data-testid="cities-dropdown-btn"
+                        >
+                          <span className="text-left flex-1">
+                            {formData.operating_cities.length > 0 
+                              ? `${formData.operating_cities.length} city/cities selected`
+                              : "Select cities"}
+                          </span>
+                          {showCitiesDropdown ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                        </Button>
+                        
+                        {showCitiesDropdown && (
+                          <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-64 overflow-auto">
+                            <div className="p-2 space-y-1">
+                              {availableCities.length > 0 ? (
+                                availableCities.map((city) => (
+                                  <label
+                                    key={city}
+                                    className="flex items-center space-x-2 p-2 hover:bg-gray-50 rounded cursor-pointer"
+                                  >
+                                    <Checkbox
+                                      checked={formData.operating_cities.includes(city)}
+                                      onCheckedChange={() => toggleCity(city)}
+                                    />
+                                    <span className="text-sm">{city}</span>
+                                  </label>
+                                ))
+                              ) : (
+                                <p className="text-sm text-slate-500 p-2">No cities available for selected states</p>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </>
+                )}
+                
                 <div className="flex flex-wrap gap-2 mt-2">
                   {formData.operating_cities.map((city, idx) => (
                     <span key={idx} className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm flex items-center gap-2">
