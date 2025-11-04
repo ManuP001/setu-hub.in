@@ -54,9 +54,9 @@ const BulkUpload = ({ enterprise }) => {
   };
 
   const downloadTemplate = () => {
-    const template = `enterprise_id,gu_id,role,quantity_required,shift_time,description,salary,experience_required
-${enterprise?.id || 'your-enterprise-id'},your-gu-id,picker,5,morning,Pick items from shelves,25000,0-1 years
-${enterprise?.id || 'your-enterprise-id'},your-gu-id,rider,3,full_day,Deliver orders,30000,1-2 years`;
+    const template = `enterprise_id,gu_id,role,quantity_required,nature_of_job,description,salary,experience_required
+${enterprise?.id || 'your-enterprise-id'},your-gu-id,Fulfillment Center Picker,5,full_time,Pick items from shelves,25000,0-1 years
+${enterprise?.id || 'your-enterprise-id'},your-gu-id,Last Mile Bike Captain,3,full_time,Deliver orders on bike,30000,1-2 years`;
     
     const blob = new Blob([template], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
