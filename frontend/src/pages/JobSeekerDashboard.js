@@ -299,10 +299,10 @@ const JobSeekerDashboard = () => {
                             </div>
                           </>
                         )}
-                        {job.shift_time && (
+                        {job.nature_of_job && (
                           <div className="flex items-center gap-2 text-sm">
                             <Clock className="w-4 h-4 text-slate-500" />
-                            <span className="capitalize">{job.shift_time}</span>
+                            <span className="capitalize">{job.nature_of_job.replace('_', ' ')}</span>
                           </div>
                         )}
                         {job.description && (
