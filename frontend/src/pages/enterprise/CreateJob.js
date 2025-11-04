@@ -135,16 +135,14 @@ const CreateJob = ({ enterprise }) => {
                     <SelectValue placeholder="Select role" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="picker">Picker</SelectItem>
-                    <SelectItem value="loader">Loader</SelectItem>
-                    <SelectItem value="biller">Biller</SelectItem>
-                    <SelectItem value="rider">Rider</SelectItem>
-                    <SelectItem value="sorter">Sorter</SelectItem>
-                    <SelectItem value="bike_rider">Bike Rider</SelectItem>
-                    <SelectItem value="van_rider">Van Rider</SelectItem>
-                    <SelectItem value="team_lead">Team Lead</SelectItem>
-                    <SelectItem value="delivery_executive">Delivery Executive</SelectItem>
-                    <SelectItem value="warehouse_picker">Warehouse Picker</SelectItem>
+                    <SelectItem value="Last Mile Bike Captain">Last Mile Bike Captain</SelectItem>
+                    <SelectItem value="Last Mile Van Captain">Last Mile Van Captain</SelectItem>
+                    <SelectItem value="Fulfillment Center Picker">Fulfillment Center Picker</SelectItem>
+                    <SelectItem value="Fulfillment Center Loader">Fulfillment Center Loader</SelectItem>
+                    <SelectItem value="Warehouse Associate">Warehouse Associate</SelectItem>
+                    <SelectItem value="Sort Center Coordinator">Sort Center Coordinator</SelectItem>
+                    <SelectItem value="Store Operations Executive">Store Operations Executive</SelectItem>
+                    <SelectItem value="Quality Control Inspector">Quality Control Inspector</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
