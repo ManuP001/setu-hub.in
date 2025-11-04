@@ -80,7 +80,16 @@ const VendorProfile = ({ user, vendor, setVendor }) => {
     }
   };
 
-  const serviceOptions = ['picker', 'loader', 'biller', 'rider', 'sorter', 'bike_rider', 'van_rider', 'team_lead', 'delivery_executive', 'warehouse_picker'];
+  const serviceOptions = [
+    'Last Mile Bike Captain',
+    'Last Mile Van Captain',
+    'Fulfillment Center Picker',
+    'Fulfillment Center Loader',
+    'Warehouse Associate',
+    'Sort Center Coordinator',
+    'Store Operations Executive',
+    'Quality Control Inspector'
+  ];
 
   return (
     <div className="p-8" data-testid="vendor-profile-page">
