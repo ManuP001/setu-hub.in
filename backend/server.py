@@ -131,7 +131,7 @@ class VendorCreate(BaseModel):
     phone: str
     operating_states: List[str]
     operating_cities: List[str]
-    operating_pin_codes: List[str]
+    operating_pin_codes: Optional[List[str]] = []  # Made optional, no longer required
     services_offered: List[str]  # List of roles they can fulfill
 
 class Vendor(BaseModel):
@@ -143,7 +143,7 @@ class Vendor(BaseModel):
     phone: str
     operating_states: List[str]
     operating_cities: List[str]
-    operating_pin_codes: List[str]
+    operating_pin_codes: Optional[List[str]] = []
     services_offered: List[str]
     created_at: str
 
