@@ -163,19 +163,17 @@ const CreateJob = ({ enterprise }) => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="shift_time">Shift Time</Label>
+                  <Label htmlFor="nature_of_job">Nature of Work</Label>
                   <Select 
-                    value={formData.shift_time} 
-                    onValueChange={(value) => setFormData({ ...formData, shift_time: value })}
+                    value={formData.nature_of_job} 
+                    onValueChange={(value) => setFormData({ ...formData, nature_of_job: value })}
                   >
-                    <SelectTrigger data-testid="shift-select">
-                      <SelectValue placeholder="Select shift" />
+                    <SelectTrigger data-testid="nature-of-work-select">
+                      <SelectValue placeholder="Select nature of work" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="morning">Morning (6 AM - 2 PM)</SelectItem>
-                      <SelectItem value="afternoon">Afternoon (2 PM - 10 PM)</SelectItem>
-                      <SelectItem value="night">Night (10 PM - 6 AM)</SelectItem>
-                      <SelectItem value="full_day">Full Day</SelectItem>
+                      <SelectItem value="full_time">Full Time</SelectItem>
+                      <SelectItem value="part_time">Part Time</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
