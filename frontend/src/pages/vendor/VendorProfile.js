@@ -215,36 +215,6 @@ const VendorProfile = ({ user, vendor, setVendor }) => {
                 </div>
               </div>
 
-              {/* Operating Pin Codes */}
-              <div className="space-y-2">
-                <Label>Operating Pin Codes *</Label>
-                <div className="flex gap-2">
-                  <Input
-                    placeholder="Add pin code"
-                    value={newPinCode}
-                    onChange={(e) => setNewPinCode(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addItem('operating_pin_codes', newPinCode, setNewPinCode))}
-                    disabled={!!vendor}
-                    data-testid="pincode-input"
-                  />
-                  <Button type="button" onClick={() => addItem('operating_pin_codes', newPinCode, setNewPinCode)} disabled={!!vendor} data-testid="add-pincode-btn">
-                    <Plus className="w-4 h-4" />
-                  </Button>
-                </div>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {formData.operating_pin_codes.map((pin, idx) => (
-                    <span key={idx} className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm flex items-center gap-2">
-                      {pin}
-                      {!vendor && (
-                        <button type="button" onClick={() => removeItem('operating_pin_codes', idx)}>
-                          <X className="w-3 h-3" />
-                        </button>
-                      )}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
               {/* Services Offered */}
               <div className="space-y-2">
                 <Label>Services Offered *</Label>
