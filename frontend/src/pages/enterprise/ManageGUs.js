@@ -115,6 +115,8 @@ const ManageGUs = ({ enterprise }) => {
                       <SelectItem value="fc">Fulfillment Center</SelectItem>
                       <SelectItem value="sort_center">Sort Center</SelectItem>
                       <SelectItem value="mother_hub">Mother Hub</SelectItem>
+                      <SelectItem value="first_mile_hub">First Mile Hub</SelectItem>
+                      <SelectItem value="last_mile_hub">Last Mile Hub</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
