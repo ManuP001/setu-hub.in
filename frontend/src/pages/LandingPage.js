@@ -233,9 +233,9 @@ const LandingPage = () => {
                           <span>₹{parseInt(job.salary).toLocaleString()}/month</span>
                         </div>
                       )}
-                      {job.shift_time && (
+                      {job.nature_of_job && (
                         <div className="text-sm text-gray-600">
-                          <span className="capitalize">{job.shift_time.replace('_', ' ')} shift</span>
+                          <span className="capitalize">{job.nature_of_job.replace('_', ' ')}</span>
                         </div>
                       )}
                       {job.experience_required && (
