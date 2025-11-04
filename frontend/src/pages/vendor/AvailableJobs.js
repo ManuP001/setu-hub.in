@@ -206,8 +206,8 @@ const AvailableJobs = ({ vendor }) => {
                   <p className="font-semibold">{selectedJob.enterprise_details?.name}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-slate-500">Shift Time</p>
-                  <p className="font-semibold capitalize">{selectedJob.shift_time || 'Not specified'}</p>
+                  <p className="text-sm text-slate-500">Nature of Work</p>
+                  <p className="font-semibold capitalize">{selectedJob.nature_of_job ? selectedJob.nature_of_job.replace('_', ' ') : 'Not specified'}</p>
                 </div>
               </div>
 
