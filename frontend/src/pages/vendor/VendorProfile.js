@@ -202,19 +202,44 @@ const VendorProfile = ({ user, vendor, setVendor }) => {
               {/* Operating States */}
               <div className="space-y-2">
                 <Label>Operating States *</Label>
-                <div className="flex gap-2">
-                  <Input
-                    placeholder="Add state"
-                    value={newState}
-                    onChange={(e) => setNewState(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addItem('operating_states', newState, setNewState))}
-                    disabled={!!vendor}
-                    data-testid="state-input"
-                  />
-                  <Button type="button" onClick={() => addItem('operating_states', newState, setNewState)} disabled={!!vendor} data-testid="add-state-btn">
-                    <Plus className="w-4 h-4" />
-                  </Button>
-                </div>
+                {!vendor && (
+                  <div className="relative">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-full justify-between h-auto min-h-[40px]"
+                      onClick={() => setShowStatesDropdown(!showStatesDropdown)}
+                      data-testid="states-dropdown-btn"
+                    >
+                      <span className="text-left flex-1">
+                        {formData.operating_states.length > 0 
+                          ? `${formData.operating_states.length} state(s) selected`
+                          : "Select states"}
+                      </span>
+                      {showStatesDropdown ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                    </Button>
+                    
+                    {showStatesDropdown && (
+                      <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-64 overflow-auto">
+                        <div className="p-2 space-y-1">
+                          {INDIAN_STATES.map((state) => (
+                            <label
+                              key={state}
+                              className="flex items-center space-x-2 p-2 hover:bg-gray-50 rounded cursor-pointer"
+                            >
+                              <Checkbox
+                                checked={formData.operating_states.includes(state)}
+                                onCheckedChange={() => toggleState(state)}
+                              />
+                              <span className="text-sm">{state}</span>
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+                
                 <div className="flex flex-wrap gap-2 mt-2">
                   {formData.operating_states.map((state, idx) => (
                     <span key={idx} className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm flex items-center gap-2">
