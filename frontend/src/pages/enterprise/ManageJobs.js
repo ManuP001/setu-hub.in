@@ -198,10 +198,10 @@ const ManageJobs = ({ enterprise }) => {
                             </div>
                           </>
                         )}
-                        {job.shift_time && (
+                        {job.nature_of_job && (
                           <div>
-                            <p className="text-slate-500">Shift</p>
-                            <p className="font-semibold">{job.shift_time}</p>
+                            <p className="text-slate-500">Nature of Work</p>
+                            <p className="font-semibold capitalize">{job.nature_of_job.replace('_', ' ')}</p>
                           </div>
                         )}
                       </div>
