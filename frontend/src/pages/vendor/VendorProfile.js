@@ -113,16 +113,16 @@ const VendorProfile = ({ user, vendor, setVendor }) => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="gst_no">GST Number *</Label>
+                  <Label htmlFor="gst_no">GST Number (Optional)</Label>
                   <Input
                     id="gst_no"
                     placeholder="22AAAAA0000A1Z5"
                     value={formData.gst_no}
                     onChange={(e) => setFormData({ ...formData, gst_no: e.target.value })}
-                    required
                     disabled={!!vendor}
                     data-testid="gst-input"
                   />
+                  <p className="text-xs text-slate-500">Required only if annual turnover exceeds ₹40 Lakhs</p>
                 </div>
               </div>
 
