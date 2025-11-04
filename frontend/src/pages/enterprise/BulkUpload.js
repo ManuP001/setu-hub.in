@@ -89,9 +89,9 @@ ${enterprise?.id || 'your-enterprise-id'},your-gu-id,Last Mile Bike Captain,3,fu
               <ul className="list-disc list-inside text-sm text-slate-600 space-y-1">
                 <li><strong>enterprise_id</strong> - Your enterprise ID (required)</li>
                 <li><strong>gu_id</strong> - Facility/GU ID where job is posted (required)</li>
-                <li><strong>role</strong> - Job role (picker, loader, rider, etc.) (required)</li>
+                <li><strong>role</strong> - Job role from standardized list (required)</li>
                 <li><strong>quantity_required</strong> - Number of positions (required)</li>
-                <li><strong>shift_time</strong> - Shift timing (optional)</li>
+                <li><strong>nature_of_job</strong> - full_time or part_time (optional)</li>
                 <li><strong>description</strong> - Job description (optional)</li>
                 <li><strong>salary</strong> - Salary range (optional)</li>
                 <li><strong>experience_required</strong> - Experience needed (optional)</li>
