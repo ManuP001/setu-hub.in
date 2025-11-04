@@ -47,7 +47,8 @@ class UserCreate(BaseModel):
     vendor_name: Optional[str] = None
 
 class UserLogin(BaseModel):
-    email: str
+    email: Optional[str] = None
+    phone: Optional[str] = None
     password: str
 
 class User(BaseModel):
